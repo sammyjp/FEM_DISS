@@ -1,0 +1,39 @@
+# depslib dependency file v1.0
+1492373544 source:c:\users\sammy\onedrive\documents\dissertation\fem_project\matrix.cpp
+	<cmath>
+	<cassert>
+	<iomanip>
+	"Matrix.hpp"
+	"Vector.hpp"
+
+1492356659 c:\users\sammy\onedrive\documents\dissertation\fem_project\matrix.hpp
+	"Vector.hpp"
+
+1488480322 c:\users\sammy\onedrive\documents\dissertation\fem_project\vector.hpp
+	<iostream>
+
+1488480550 source:c:\users\sammy\onedrive\documents\dissertation\fem_project\vector.cpp
+	<cmath>
+	<cassert>
+	<iomanip>
+	"Vector.hpp"
+
+1497109679 source:c:\users\sammy\onedrive\documents\dissertation\fem_project\mesh.cpp
+	<cmath>
+	<cassert>
+	"Mesh.hpp"
+	"Matrix.hpp"
+	"Vector.hpp"
+
+1497108587 c:\users\sammy\onedrive\documents\dissertation\fem_project\mesh.hpp
+	"Vector.hpp"
+	"Element.hpp"
+
+1497109751 source:c:\users\sammy\onedrive\documents\dissertation\fem_project\driver.cpp
+	<iostream>
+	"Mesh.hpp"
+
+1496869967 c:\users\sammy\onedrive\documents\dissertation\fem_project\element.hpp
+
+1496869855 source:c:\users\sammy\onedrive\documents\dissertation\fem_project\element.cpp
+
