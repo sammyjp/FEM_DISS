@@ -32,8 +32,10 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="Driver.cpp" />
-		<Unit filename="ELement.cpp" />
+		<Unit filename="Element.cpp" />
 		<Unit filename="Element.hpp" />
+		<Unit filename="FE_Solution.cpp" />
+		<Unit filename="FE_Solution.hpp" />
 		<Unit filename="Matrix.cpp" />
 		<Unit filename="Matrix.hpp" />
 		<Unit filename="Mesh.cpp" />

@@ -10,7 +10,8 @@ private:
 
 public:
 
-
+    void MapLocalToGlobal();
+    void MapGlobalToLocal();
 
 
 
