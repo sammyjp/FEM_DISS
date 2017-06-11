@@ -25,6 +25,7 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
     assert(i>=0&&i<=mMesh->GetNumElements());
 
     int N = mMesh->GetNumElements();
+
     Vector* xGrid = new Vector(mMesh->GetXGridPoints());
 
     if (i==0)
@@ -73,4 +74,6 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
             }
         }
     }
+
+    delete xGrid;
 }
