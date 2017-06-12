@@ -21,7 +21,7 @@ public:
 
     void ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Vector& x);
 
-
+    void ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Vector& x);
 
 };
 

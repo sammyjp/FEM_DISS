@@ -7,7 +7,6 @@ int main(int argc, char* argv[])
 {
     int dim = 1;
     int elem = 2;
-    double h = 0.2;
 
     Mesh* H = new Mesh(elem, dim);
 
@@ -23,14 +22,17 @@ int main(int argc, char* argv[])
 
     Vector* x = new Vector(5);
     Vector* F = new Vector(5);
+    Vector* Fd = new Vector(5);
     (*x)[0] = 0;
     (*x)[1] = 0.25;
     (*x)[2] = 0.5;
     (*x)[3] = 0.75;
-    (*x)[4] = 1;
+    (*x)[4] = 1.0;
 
-    Sol->ComputeLinearBasisFunctionValues(1, *F,*x);
-    std::cout << "F " << std::endl << *F;
+    Sol->ComputeLinearBasisFunctionValues(1,*F,*x);
+    std::cout << "F =" << std::endl << *F;
+    Sol->ComputeLinearBasisFunctionDerivativeValues(1,*Fd,*x);
+    std::cout << "Fd =" << std::endl << *Fd;
 
 
     delete H;
