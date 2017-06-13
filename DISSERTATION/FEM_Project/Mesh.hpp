@@ -1,8 +1,9 @@
 #ifndef MESHHEADERDEF
 #define MESHHEADERDEF
 
-#include "Vector.hpp"
 #include "Element.hpp"
+#include "Matrix.hpp"
+#include "Vector.hpp"
 
 class Mesh
 {
@@ -14,16 +15,13 @@ private:
     int mNumFaces;
     int mDimension;
 
-    double mStepSize;
-
-    Vector* mXGridPoints;
-    Vector* mYGridPoints;
-    Vector* mZGridPoints;
+    Matrix* mGridPoints;
+    Element* mElementsArray;
 
 public:
 
     // Specialised Constructor
-    Mesh(int numElements, int dimension);
+    Mesh(int dimension, int numElements);
 
     // Copy Constructor
     Mesh(const Mesh& otherMesh);
@@ -37,11 +35,7 @@ public:
     int GetNumFaces() const;
     int GetDimension() const;
 
-    Vector GetXGridPoints() const;
-    Vector GetYGridPoints() const;
-    Vector GetZGridPoints() const;
-
-    void GenerateUniformMesh();
+    Matrix GetGridPoints() const;
 };
 
 #endif

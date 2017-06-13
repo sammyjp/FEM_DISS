@@ -71,6 +71,31 @@ int Matrix::GetNumberOfColumns() const
    return mNumCols;
 }
 
+Vector Matrix::GetRowAsVector(int rowNumber)
+{
+    assert((rowNumber > 0) && (rowNumber <= mNumRows));
+
+    Vector vec(mNumCols);
+    for (int i=0; i<mNumCols; i++)
+    {
+        vec[i] = mData[rowNumber - 1][i];
+    }
+    return vec;
+}
+
+Vector Matrix::GetColumnAsVector(int columnNumber)
+{
+    assert((columnNumber > 0) && (columnNumber <= mNumCols));
+
+    Vector vec(mNumRows);
+    for (int i=0; i<mNumRows; i++)
+    {
+        vec[i] = mData[i][columnNumber - 1];
+    }
+    return vec;
+}
+
+
 // Overloading the round brackets
 // Note that this uses `one-based' indexing,
 // and a check on the validity of the index

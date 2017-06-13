@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cmath>
 
+#include "Matrix.hpp"
 #include "Mesh.hpp"
 #include "FE_Solution.hpp"
 
@@ -14,28 +16,21 @@ int main(int argc, char* argv[])
     std::cout << "Nodes = " << H->GetNumNodes() << std::endl;
     std::cout << "Dimension = " << H->GetDimension() << std::endl;
 
-    H->GenerateUniformMesh();
 
-    std::cout << "X = " << std::endl << H->GetXGridPoints();
-
-    FE_Solution* Sol = new FE_Solution(*H);
-
-    Vector* x = new Vector(5);
-    Vector* F = new Vector(5);
-    Vector* Fd = new Vector(5);
-    (*x)[0] = 0;
-    (*x)[1] = 0.25;
-    (*x)[2] = 0.5;
-    (*x)[3] = 0.75;
-    (*x)[4] = 1.0;
-
-    Sol->ComputeLinearBasisFunctionValues(1,*F,*x);
-    std::cout << "F =" << std::endl << *F;
-    Sol->ComputeLinearBasisFunctionDerivativeValues(1,*Fd,*x);
-    std::cout << "Fd =" << std::endl << *Fd;
+    Matrix* M = new Matrix(3,5);
+    for (int i=1; i<=M->GetNumberOfRows(); i++)
+    {
+        for (int j=1; j<=M->GetNumberOfColumns(); j++)
+        {
+            (*M)(i,j) = pow(2*i+j,2.0);
+        }
+    }
+    std::cout << "Matrix M =" << std::endl << *M;
+    std::cout << "Row 2 =" << std::endl << M->GetRowAsVector(2);
+    std::cout << "Column 4 =" << std::endl << M->GetColumnAsVector(4);
+    delete M;
 
 
     delete H;
-    delete Sol;
     return 0;
 }

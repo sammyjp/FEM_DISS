@@ -5,22 +5,24 @@
 #include "Vector.hpp"
 
 // Specialised Constructor
-Mesh::Mesh(int numElements, int dimension)
+Mesh::Mesh(int dimension, int numElements)
 {
     assert(numElements > 0);
     assert(dimension > 0);
 
-    mNumElements = numElements;
     mDimension = dimension;
+    mNumElements = numElements;
 
     //
     mNumNodes = numElements + 1;
     //
 
-    if (dimension == 1)
+    mGridPoints = new Matrix(mDimension, mNumNodes);
+
+    mElementsArray = new Element [mNumElements];
+    for (int i=0; i<mNumElements; i++)
     {
-        mNumNodes = numElements + 1;
-        mXGridPoints = new Vector(mNumNodes);
+        mElementsArray[i] = new Element();
     }
 }
 
@@ -28,29 +30,26 @@ Mesh::Mesh(int numElements, int dimension)
 // Copy Constructor
 Mesh::Mesh(const Mesh& otherMesh)
 {
+    mDimension = otherMesh.mDimension;
     mNumElements = otherMesh.mNumElements;
     mNumNodes = otherMesh.mNumNodes;
     mNumEdges = otherMesh.mNumEdges;
     mNumFaces = otherMesh.mNumFaces;
-    mDimension = otherMesh.mDimension;
 
-    mXGridPoints = otherMesh.mXGridPoints;
-    mYGridPoints = otherMesh.mYGridPoints;
-    mZGridPoints = otherMesh.mZGridPoints;
+    mGridPoints = otherMesh.mGridPoints;
+    mElementsArray = otherMesh.mElementsArray;
 }
 
 // Destructor
 Mesh::~Mesh()
 {
-    delete mXGridPoints;
-    if (mDimension > 1)
-    {
-        delete mYGridPoints;
-    }
-    if (mDimension > 2)
-    {
-        delete mZGridPoints;
-    }
+    delete mGridPoints;
+    delete mElementsArray;
+}
+
+int Mesh::GetDimension() const
+{
+    return mDimension;
 }
 
 int Mesh::GetNumElements() const
@@ -73,33 +72,7 @@ int Mesh::GetNumFaces() const
     return mNumFaces;
 }
 
-int Mesh::GetDimension() const
+Matrix Mesh::GetGridPoints() const
 {
-    return mDimension;
-}
-
-Vector Mesh::GetXGridPoints() const
-{
-    return *mXGridPoints;
-}
-
-Vector Mesh::GetYGridPoints() const
-{
-    assert(mDimension > 1);
-    return *mYGridPoints;
-}
-
-Vector Mesh::GetZGridPoints() const
-{
-    assert(mDimension > 2);
-    return *mZGridPoints;
-}
-
-void Mesh::GenerateUniformMesh()
-{
-    mStepSize = 1.0/(mNumNodes - 1);
-    for (int i=0; i<mXGridPoints->GetSize(); i++)
-    {
-        (*mXGridPoints)[i] = i*mStepSize;
-    }
+    return *mGridPoints;
 }

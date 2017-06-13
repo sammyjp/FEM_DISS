@@ -29,6 +29,9 @@ public:
   int GetNumberOfRows() const;
   int GetNumberOfColumns() const;
 
+  Vector GetRowAsVector(int rowNumber);
+  Vector GetColumnAsVector(int columnNumber);
+
   // 1-based indexing
   double& operator()(int i, int j);
 

@@ -26,7 +26,7 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
 
     int N = mMesh->GetNumElements();
 
-    Vector* xGrid = new Vector(mMesh->GetXGridPoints());
+    Vector* xGrid = new Vector(mMesh->GetGridPoints().GetRowAsVector(1));
 
     if (i==0)
     {
@@ -85,7 +85,7 @@ void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& deri
 
     int N = mMesh->GetNumElements();
 
-    Vector* xGrid = new Vector(mMesh->GetXGridPoints());
+    Vector* xGrid = new Vector(mMesh->GetGridPoints().GetRowAsVector(1));
 
     if (i==0)
     {
