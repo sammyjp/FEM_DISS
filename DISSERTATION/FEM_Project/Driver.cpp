@@ -1,9 +1,10 @@
 #include <iostream>
 #include <cmath>
 
+#include "FE_Solution.hpp"
 #include "Matrix.hpp"
 #include "Mesh.hpp"
-#include "FE_Solution.hpp"
+#include "Quadrature.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -28,9 +29,14 @@ int main(int argc, char* argv[])
     std::cout << "Matrix M =" << std::endl << *M;
     std::cout << "Row 2 =" << std::endl << M->GetRowAsVector(2);
     std::cout << "Column 4 =" << std::endl << M->GetColumnAsVector(4);
-    delete M;
 
+    Quadrature* Quad = new Quadrature(1,5,50);
+    Vector GRID = Quad->GetUniformGridPoints();
+    for (int i=0; i<GRID.GetSize(); i++)
+    {
+        GRID[i] = pow(GRID[i],2.0);
+    }
+    std::cout << "Integral x^2 between 1 and 5 = " << Quad->TrapezoidRule(GRID) << std::endl;
 
-    delete H;
     return 0;
 }

@@ -40,6 +40,8 @@
 		<Unit filename="Matrix.hpp" />
 		<Unit filename="Mesh.cpp" />
 		<Unit filename="Mesh.hpp" />
+		<Unit filename="Quadrature.cpp" />
+		<Unit filename="Quadrature.hpp" />
 		<Unit filename="Vector.cpp" />
 		<Unit filename="Vector.hpp" />
 		<Extensions>

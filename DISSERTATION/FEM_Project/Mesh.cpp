@@ -20,10 +20,6 @@ Mesh::Mesh(int dimension, int numElements)
     mGridPoints = new Matrix(mDimension, mNumNodes);
 
     mElementsArray = new Element [mNumElements];
-    for (int i=0; i<mNumElements; i++)
-    {
-        mElementsArray[i] = new Element();
-    }
 }
 
 

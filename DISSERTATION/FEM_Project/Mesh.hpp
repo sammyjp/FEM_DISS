@@ -29,11 +29,11 @@ public:
     // Destructor
     ~Mesh();
 
+    int GetDimension() const;
     int GetNumElements() const;
     int GetNumNodes() const;
     int GetNumEdges() const;
     int GetNumFaces() const;
-    int GetDimension() const;
 
     Matrix GetGridPoints() const;
 };
