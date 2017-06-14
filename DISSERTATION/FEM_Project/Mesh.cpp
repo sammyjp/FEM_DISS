@@ -5,21 +5,17 @@
 #include "Vector.hpp"
 
 // Specialised Constructor
-Mesh::Mesh(int dimension, int numElements)
+Mesh::Mesh(Matrix& gridPoints, int numElements, Matrix& connectivity)
 {
     assert(numElements > 0);
-    assert(dimension > 0);
 
-    mDimension = dimension;
+    mDimension = gridPoints.GetNumberOfRows();
+    mNumNodes = gridPoints.GetNumberOfRows();
     mNumElements = numElements;
 
-    //
-    mNumNodes = numElements + 1;
-    //
-
-    mGridPoints = new Matrix(mDimension, mNumNodes);
-
-    mElementsArray = new Element [mNumElements];
+    mGridPoints = new Matrix(gridPoints);
+    mConnectivity = new Matrix(connectivity);
+    mElement = new Element();
 }
 
 
@@ -29,18 +25,17 @@ Mesh::Mesh(const Mesh& otherMesh)
     mDimension = otherMesh.mDimension;
     mNumElements = otherMesh.mNumElements;
     mNumNodes = otherMesh.mNumNodes;
-    mNumEdges = otherMesh.mNumEdges;
-    mNumFaces = otherMesh.mNumFaces;
 
     mGridPoints = otherMesh.mGridPoints;
-    mElementsArray = otherMesh.mElementsArray;
+    mConnectivity = otherMesh.mConnectivity;
 }
 
 // Destructor
 Mesh::~Mesh()
 {
     delete mGridPoints;
-    delete mElementsArray;
+    delete mConnectivity;
+    delete mElement;
 }
 
 int Mesh::GetDimension() const
@@ -58,17 +53,12 @@ int Mesh::GetNumNodes() const
     return mNumNodes;
 }
 
-int Mesh::GetNumEdges() const
-{
-    return mNumEdges;
-}
-
-int Mesh::GetNumFaces() const
-{
-    return mNumFaces;
-}
-
 Matrix Mesh::GetGridPoints() const
 {
     return *mGridPoints;
+}
+
+Matrix Mesh::GetConnectivityArray() const
+{
+    return *mConnectivity;
 }

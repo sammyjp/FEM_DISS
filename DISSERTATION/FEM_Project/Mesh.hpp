@@ -9,19 +9,18 @@ class Mesh
 {
 private:
 
+    int mDimension;
     int mNumElements;
     int mNumNodes;
-    int mNumEdges;
-    int mNumFaces;
-    int mDimension;
 
     Matrix* mGridPoints;
-    Element* mElementsArray;
+    Matrix* mConnectivity;
+    Element* mElement;
 
 public:
 
     // Specialised Constructor
-    Mesh(int dimension, int numElements);
+    Mesh(Matrix& gridPoints, int numElements, Matrix& connectivity);
 
     // Copy Constructor
     Mesh(const Mesh& otherMesh);
@@ -32,10 +31,9 @@ public:
     int GetDimension() const;
     int GetNumElements() const;
     int GetNumNodes() const;
-    int GetNumEdges() const;
-    int GetNumFaces() const;
 
     Matrix GetGridPoints() const;
+    Matrix GetConnectivityArray() const;
 };
 
 #endif
