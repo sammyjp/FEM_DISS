@@ -83,6 +83,16 @@ Vector& Vector::operator=(const Vector& otherVector)
    return *this;
 }
 
+Vector& Vector::operator=(const double constant)
+{
+    for (int i=0; i<mSize; i++)
+    {
+        mData[i] = constant;
+    }
+    return *this;
+}
+
+
 // Overloading the unary + operator
 Vector Vector::operator+() const
 {

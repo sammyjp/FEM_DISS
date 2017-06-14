@@ -40,6 +40,7 @@ public:
 
   // Assignment
   Vector& operator=(const Vector& otherVector);
+  Vector& operator=(const double constant);
 
   // Unary +
   Vector operator+() const;
