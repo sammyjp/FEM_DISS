@@ -15,7 +15,7 @@ Mesh::Mesh(Matrix& gridPoints, int numElements, Matrix& connectivity)
 
     mGridPoints = new Matrix(gridPoints);
     mConnectivity = new Matrix(connectivity);
-    mElement = new Element();
+    mElement = new Element(mDimension);
 }
 
 
