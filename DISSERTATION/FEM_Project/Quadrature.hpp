@@ -17,11 +17,12 @@ private:
 
     void TransformGQPoints();
     void ComputeGQWeights(Vector& GQWeights);
-    void EvaluateNthLegendrePolynomial(int n, Vector& pointsToEvaluate, Vector& legendrePoints);
-    void NewtonForLegendre();
+
+    void NewtonForLegendre(double tolerance, Vector& initialGuess, Vector& legendreRoots);
 
 public:
-
+    void EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints);
+    void EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEvaluate, Vector& legendrePoints);
     // Specialised Constructor
     Quadrature(double startPoint, double endPoint, int numNodes);
 
