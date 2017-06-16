@@ -26,18 +26,22 @@ int main(int argc, char* argv[])
 
     std::cout << *globalCoords << std::endl;
 
+    *localCoords = 0;
+    E->MapGlobalToLocal(*nodes, *globalCoords, *localCoords);
+    std::cout << *localCoords << std::endl;
+
     Element* EMat = new Element(2);
 
     Matrix* nodeMatrix = new Matrix(2,3);
-    (*nodeMatrix)(1,1) = 2;
+    (*nodeMatrix)(1,1) = 0.5;
     (*nodeMatrix)(1,2) = 1;
     (*nodeMatrix)(1,3) = 0;
-    (*nodeMatrix)(2,1) = 1;
+    (*nodeMatrix)(2,1) = 0;
     (*nodeMatrix)(2,2) = 0;
-    (*nodeMatrix)(2,3) = 2;
+    (*nodeMatrix)(2,3) = 1;
 
     Matrix* localMatrix = new Matrix(2,3);
-    (*localMatrix)(1,1) = 0;
+    (*localMatrix)(1,1) = 0.5;
     (*localMatrix)(1,2) = 1;
     (*localMatrix)(1,3) = 0;
     (*localMatrix)(2,1) = 0;
@@ -50,12 +54,25 @@ int main(int argc, char* argv[])
 
     std::cout << *globalMatrix << std::endl;
 
+    for (int i=1; i<=localMatrix->GetNumberOfRows(); i++)
+    {
+        for (int j=1; j<=localMatrix->GetNumberOfColumns(); j++)
+        {
+            (*localMatrix)(i,j) = 0;
+        }
+    }
+
+    EMat->MapGlobalToLocal(*nodeMatrix, *globalMatrix, *localMatrix);
+    std::cout << *localMatrix << std::endl;
+
+
     delete E;
     delete EMat;
     delete localCoords;
     delete globalCoords;
     delete localMatrix;
     delete globalMatrix;
+
 
     return 0;
 }

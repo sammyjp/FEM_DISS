@@ -18,8 +18,8 @@ public:
 
     void MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords);
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
-    void MapGlobalToLocal(Vector& globalCoords, Vector& localCoords);
-    void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords);
+    void MapGlobalToLocal(Vector& nodes, Vector& globalCoords, Vector& localCoords);
+    void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
 
 
 
