@@ -18,7 +18,7 @@ private:
     void TransformGQPoints();
     void ComputeGQWeights(Vector& GQWeights);
 
-    void NewtonForLegendre(double tolerance, Vector& initialGuess, Vector& legendreRoots);
+    void NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots);
 
 public:
     void EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints);

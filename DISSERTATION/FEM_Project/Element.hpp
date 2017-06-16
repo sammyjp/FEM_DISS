@@ -2,6 +2,7 @@
 #define ELEMENTHEADERDEF
 
 #include "Matrix.hpp"
+#include "Quadrature.hpp"
 #include "Vector.hpp"
 
 class Element
@@ -21,8 +22,7 @@ public:
     void MapGlobalToLocal(Vector& nodes, Vector& globalCoords, Vector& localCoords);
     void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
 
-
-
+    void GetMappingJacobian(Matrix& nodes, Matrix& Jacobian);
 
 
 };

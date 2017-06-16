@@ -130,11 +130,12 @@ void Quadrature::EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEv
     delete pn_next;
 }
 
-void Quadrature::NewtonForLegendre(double tolerance, Vector& initialGuess, Vector& legendreRoots)
+void Quadrature::NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots)
 {
     assert(initialGuess.GetSize() == legendreRoots.GetSize());
     assert(initialGuess.GetSize() == mNumNodes);
 
+    int iterationCounter = 0;
     double error;
     Vector* error_vec = new Vector (legendreRoots.GetSize());
     Vector* legendreEval = new Vector (legendreRoots.GetSize());
@@ -154,7 +155,8 @@ void Quadrature::NewtonForLegendre(double tolerance, Vector& initialGuess, Vecto
         initialGuess = legendreRoots;
 
         error = error_vec->CalculateNorm(2);
-    } while (error >= tolerance);
+        iterationCounter++;
+    } while (error >= tolerance && iterationCounter <= maxIterations);
 
     delete error_vec;
     delete legendreEval;
@@ -164,6 +166,7 @@ void Quadrature::NewtonForLegendre(double tolerance, Vector& initialGuess, Vecto
 Vector Quadrature::GetGQPoints()
 {
     double tolerance = 1e-12;
+    int maxIterations = 1000;
     Vector* initialGuess = new Vector (mNumNodes);
 
     for (int i=1; i<=mNumNodes; i++)
@@ -171,7 +174,7 @@ Vector Quadrature::GetGQPoints()
         (*initialGuess)[i-1] = -cos((((2.0*i)-1.0)/(2.0*mNumNodes))*Pi);
     }
 
-    NewtonForLegendre(tolerance, (*initialGuess), (*mGridPoints));
+    NewtonForLegendre(tolerance, maxIterations, (*initialGuess), (*mGridPoints));
     delete initialGuess;
 
     TransformGQPoints();

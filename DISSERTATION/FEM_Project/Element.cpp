@@ -45,7 +45,7 @@ void Element::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globa
         case 2:
         {
             assert(localCoords.GetNumberOfRows() == 2);
-            assert(nodes.GetNumberOfRows() == 2);
+            assert(nodes.GetNumberOfRows() == mElementType);
             assert(nodes.GetNumberOfColumns() == 3);
 
             for (int i=1; i<=globalCoords.GetNumberOfRows(); i++)
@@ -104,6 +104,36 @@ void Element::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& loca
                 localCoords(2,j) = (globalCoords(2,j)*(nodes(1,1)-nodes(1,2)) + nodes(2,1)*(nodes(1,2)-globalCoords(1,j)) + nodes(2,2)*(globalCoords(1,j)-nodes(1,1)))/
                                    (nodes(2,1)*(nodes(1,2)-nodes(1,3)) + nodes(2,2)*(nodes(1,3)-nodes(1,1)) + nodes(2,3)*(nodes(1,1)-nodes(1,2)));
             }
+        } break;
+
+    }
+}
+
+void Element::GetMappingJacobian(Matrix& nodes, Matrix& Jacobian)
+{
+    assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
+
+    switch(mElementType)
+    {
+        case 1:
+        {
+            assert(Jacobian.GetNumberOfRows() == 1);
+            assert(nodes.GetNumberOfRows() == 1);
+            assert(nodes.GetNumberOfColumns() == 2);
+
+            Jacobian(1,1) = 0.5*(nodes(1,2) - nodes(1,1));
+        } break;
+
+        case 2:
+        {
+            assert(Jacobian.GetNumberOfRows() == 2);
+            assert(nodes.GetNumberOfRows() == 2);
+            assert(nodes.GetNumberOfColumns() == 3);
+
+            Jacobian(1,1) = nodes(1,2) - nodes(1,1);
+            Jacobian(1,2) = nodes(1,3) - nodes(1,1);
+            Jacobian(2,1) = nodes(2,2) - nodes(2,1);
+            Jacobian(2,2) = nodes(2,3) - nodes(2,1);
         } break;
 
     }
