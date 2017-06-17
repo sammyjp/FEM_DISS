@@ -5,16 +5,14 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
 
-Element::Element(int elementType)
+Element::Element(ElementType elementType)
 {
-    assert(elementType >= 1);
     mElementType = elementType;
 }
 
-
 void Element::MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords)
 {
-    assert(mElementType == 1);
+    assert(mElementType == ElementType::Interval);
     assert(localCoords.GetSize() == globalCoords.GetSize());
 
     for (int i=0; i<globalCoords.GetSize(); i++)
@@ -30,7 +28,7 @@ void Element::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globa
 
     switch(mElementType)
     {
-        case 1:
+        case ElementType::Interval:
         {
             assert(localCoords.GetNumberOfRows() == 1);
             assert(nodes.GetNumberOfRows() == 1);
@@ -42,10 +40,10 @@ void Element::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globa
             }
         } break;
 
-        case 2:
+        case ElementType::Triangle:
         {
             assert(localCoords.GetNumberOfRows() == 2);
-            assert(nodes.GetNumberOfRows() == mElementType);
+            assert(nodes.GetNumberOfRows() == 2);
             assert(nodes.GetNumberOfColumns() == 3);
 
             for (int i=1; i<=globalCoords.GetNumberOfRows(); i++)
@@ -62,7 +60,7 @@ void Element::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globa
 
 void Element::MapGlobalToLocal(Vector& nodes, Vector& globalCoords, Vector& localCoords)
 {
-    assert(mElementType == 1);
+    assert(mElementType == ElementType::Interval);
     assert(localCoords.GetSize() == globalCoords.GetSize());
 
     for (int i=0; i<localCoords.GetSize(); i++)
@@ -78,7 +76,7 @@ void Element::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& loca
 
     switch(mElementType)
     {
-        case 1:
+        case ElementType::Interval:
         {
             assert(globalCoords.GetNumberOfRows() == 1);
             assert(nodes.GetNumberOfRows() == 1);
@@ -90,7 +88,7 @@ void Element::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& loca
             }
         } break;
 
-        case 2:
+        case ElementType::Triangle:
         {
             assert(globalCoords.GetNumberOfRows() == 2);
             assert(nodes.GetNumberOfRows() == 2);
@@ -109,13 +107,22 @@ void Element::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& loca
     }
 }
 
-void Element::GetMappingJacobian(Matrix& nodes, Matrix& Jacobian)
+void Element::ComputeMappingJacobian(Vector& nodes, Matrix& Jacobian)
+{
+    assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
+    assert(Jacobian.GetNumberOfRows() == 1);
+    assert(nodes.GetSize() == 2);
+
+    Jacobian(1,1) = 0.5*(nodes[1] - nodes[0]);
+}
+
+void Element::ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian)
 {
     assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
 
     switch(mElementType)
     {
-        case 1:
+        case ElementType::Interval:
         {
             assert(Jacobian.GetNumberOfRows() == 1);
             assert(nodes.GetNumberOfRows() == 1);
@@ -124,7 +131,7 @@ void Element::GetMappingJacobian(Matrix& nodes, Matrix& Jacobian)
             Jacobian(1,1) = 0.5*(nodes(1,2) - nodes(1,1));
         } break;
 
-        case 2:
+        case ElementType::Triangle:
         {
             assert(Jacobian.GetNumberOfRows() == 2);
             assert(nodes.GetNumberOfRows() == 2);

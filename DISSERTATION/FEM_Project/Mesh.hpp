@@ -15,12 +15,13 @@ private:
 
     Matrix* mGridPoints;
     Matrix* mConnectivity;
-    Element* mElement;
+
+    Element** mElementsArray;
 
 public:
 
     // Specialised Constructor
-    Mesh(Matrix& gridPoints, int numElements, Matrix& connectivity);
+    Mesh(Matrix& gridPoints, Matrix& connectivity);
 
     // Copy Constructor
     Mesh(const Mesh& otherMesh);
@@ -34,6 +35,7 @@ public:
 
     Matrix GetGridPoints() const;
     Matrix GetConnectivityArray() const;
+
 };
 
 #endif

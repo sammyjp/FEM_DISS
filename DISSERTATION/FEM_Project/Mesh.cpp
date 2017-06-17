@@ -5,19 +5,55 @@
 #include "Vector.hpp"
 
 // Specialised Constructor
-Mesh::Mesh(Matrix& gridPoints, int numElements, Matrix& connectivity)
+Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
 {
-    assert(numElements > 0);
-
     mDimension = gridPoints.GetNumberOfRows();
     mNumNodes = gridPoints.GetNumberOfRows();
-    mNumElements = numElements;
+    mNumElements = connectivity.GetNumberOfRows();
 
     mGridPoints = new Matrix(gridPoints);
     mConnectivity = new Matrix(connectivity);
-    mElement = new Element(mDimension);
-}
+    mElementsArray = new Element* [mNumElements];
 
+    switch(mDimension)
+    {
+        case 1:
+        {
+            for (int i=0; i<mNumElements; i++)
+            {
+                mElementsArray[i] = new Element(Element::ElementType::Interval);
+            }
+        } break;
+
+        case 2:
+        {
+            for (int i=1; i<=connectivity.GetNumberOfRows(); i++)
+            {
+                int nonZeros = 0;
+                for (int j=1; j<=connectivity.GetNumberOfColumns(); j++)
+                {
+                    if (connectivity(i,j) != 0)
+                    {
+                        nonZeros++;
+                    }
+                }
+                switch(nonZeros)
+                {
+                    case 3:
+                    {
+                        mElementsArray[i] = new Element(Element::ElementType::Triangle);
+                    }
+                    case 4:
+                    {
+                        mElementsArray[i] = new Element(Element::ElementType::Quad);
+                    }
+                }
+            }
+        } break;
+    }
+
+
+}
 
 // Copy Constructor
 Mesh::Mesh(const Mesh& otherMesh)
@@ -33,9 +69,14 @@ Mesh::Mesh(const Mesh& otherMesh)
 // Destructor
 Mesh::~Mesh()
 {
+    for (int i=0; i<mNumElements; i++)
+    {
+        delete[] mElementsArray[i];
+    }
+    delete[] mElementsArray;
+
     delete mGridPoints;
     delete mConnectivity;
-    delete mElement;
 }
 
 int Mesh::GetDimension() const

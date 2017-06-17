@@ -7,22 +7,29 @@
 
 class Element
 {
-protected:
-
-    int mElementType;
-
 public:
 
+    enum class ElementType
+    {
+        Interval,
+        Triangle,
+        Quad,
+    };
+
     // Specialised Constructor
-    Element(int elementType);
-    // 1 for interval, 2 for triangle,... corresponding to dimension.
+    Element(ElementType elementType);
 
     void MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords);
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
     void MapGlobalToLocal(Vector& nodes, Vector& globalCoords, Vector& localCoords);
     void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
 
-    void GetMappingJacobian(Matrix& nodes, Matrix& Jacobian);
+    void ComputeMappingJacobian(Vector& nodes, Matrix& Jacobian);
+    void ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian);
+
+protected:
+
+    ElementType mElementType;
 
 
 };
