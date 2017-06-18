@@ -19,16 +19,17 @@ Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
     {
         case 1:
         {
-            for (int i=0; i<mNumElements; i++)
+            for (int i=1; i<=mNumElements; i++)
             {
-
-                mElementsArray[i] = new Interval(mConnectivity->GetRowAsVector(i));
+                Vector* elementConnectivity =  new Vector(mConnectivity->GetRowAsVector(i));
+                mElementsArray[i-1] = new Interval(*elementConnectivity);
+                delete elementConnectivity;
             }
         } break;
 
         case 2:
         {
-            for (int i=1; i<=connectivity.GetNumberOfRows(); i++)
+            for (int i=1; i<=mNumElements; i++)
             {
                 int nonZeros = 0;
                 for (int j=1; j<=connectivity.GetNumberOfColumns(); j++)
@@ -38,17 +39,22 @@ Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
                         nonZeros++;
                     }
                 }
+
+                Vector* elementConnectivity =  new Vector(mConnectivity->GetRowAsVector(i));
+
                 switch(nonZeros)
                 {
                     case 3:
                     {
-                        mElementsArray[i] = new Triangle(mConnectivity->GetRowAsVector(i));
-                    }
+                        mElementsArray[i-1] = new Triangle(*elementConnectivity);
+                    } break;
+
                     case 4:
                     {
-                        mElementsArray[i] = new Quadrilateral(mConnectivity->GetRowAsVector(i));
-                    }
+                        mElementsArray[i-1] = new Quadrilateral(*elementConnectivity);
+                    } break;
                 }
+                delete elementConnectivity;
             }
         } break;
     }
@@ -72,12 +78,18 @@ Mesh::~Mesh()
 {
     for (int i=0; i<mNumElements; i++)
     {
-        delete[] mElementsArray[i];
+        delete mElementsArray[i];
     }
     delete[] mElementsArray;
 
     delete mGridPoints;
     delete mConnectivity;
+}
+
+Element* Mesh::GetElement(int elementArrayIndex) const
+{
+    assert(elementArrayIndex >= 0 && elementArrayIndex < mNumElements);
+    return mElementsArray[elementArrayIndex];
 }
 
 int Mesh::GetDimension() const

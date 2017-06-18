@@ -8,7 +8,7 @@
 class Element
 {
 protected:
-    Vector* mElementConnectivity;
+    Vector* mElementConnectivityArray;
 
 public:
 
@@ -22,6 +22,7 @@ public:
     virtual ~Element();
 
     virtual int GetElementType() const = 0;
+    virtual Vector GetElementConnectivityArray() const;
 
     virtual void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords) = 0;
     virtual void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords) = 0;

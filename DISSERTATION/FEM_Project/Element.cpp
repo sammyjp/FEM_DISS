@@ -7,5 +7,10 @@
 
 Element::~Element()
 {
-    delete mElementConnectivity;
+    delete mElementConnectivityArray;
+}
+
+Vector Element::GetElementConnectivityArray() const
+{
+    return *mElementConnectivityArray;
 }

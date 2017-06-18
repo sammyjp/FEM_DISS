@@ -37,6 +37,8 @@ public:
     int GetNumElements() const;
     int GetNumNodes() const;
 
+    Element* GetElement(int elementArrayIndex) const;
+
     Matrix GetGridPoints() const;
     Matrix GetConnectivityArray() const;
 

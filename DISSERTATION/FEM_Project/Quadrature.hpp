@@ -26,7 +26,7 @@ public:
     void EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints);
     void EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEvaluate, Vector& legendrePoints);
     // Specialised Constructor
-    Quadrature(Matrix* boundaryNodes, int ElementType);
+    Quadrature(int ElementType, Matrix& ElementBoundaryNodes);
     Quadrature(double startPoint, double endPoint, int numNodes);
 
     // Copy Constructor

@@ -5,7 +5,7 @@
 
 Triangle::Triangle(Vector& elementConnectivity)
 {
-    mElementConnectivity = new Vector(elementConnectivity);
+    mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
 int Triangle::GetElementType() const

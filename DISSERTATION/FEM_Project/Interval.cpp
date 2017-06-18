@@ -3,9 +3,9 @@
 
 #include "Interval.hpp"
 
-Interval::Interval(Vector& elementConnectivity)
+Interval::Interval(Vector elementConnectivity)
 {
-    mElementConnectivity = new Vector(elementConnectivity);
+    mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
 int Interval::GetElementType() const

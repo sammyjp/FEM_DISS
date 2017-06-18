@@ -5,7 +5,7 @@
 
 Quadrilateral::Quadrilateral(Vector& elementConnectivity)
 {
-    mElementConnectivity = new Vector(elementConnectivity);
+    mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
 int Quadrilateral::GetElementType() const

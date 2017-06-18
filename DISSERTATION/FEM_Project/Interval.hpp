@@ -10,7 +10,7 @@ private:
 
 public:
 
-    Interval(Vector& elementConnectivity);
+    Interval(Vector elementConnectivity);
 
     int GetElementType() const;
 
