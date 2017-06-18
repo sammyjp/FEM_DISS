@@ -36,12 +36,19 @@
 		<Unit filename="Element.hpp" />
 		<Unit filename="FE_Solution.cpp" />
 		<Unit filename="FE_Solution.hpp" />
+		<Unit filename="Interval.cpp" />
+		<Unit filename="Interval.hpp" />
 		<Unit filename="Matrix.cpp" />
 		<Unit filename="Matrix.hpp" />
 		<Unit filename="Mesh.cpp" />
 		<Unit filename="Mesh.hpp" />
 		<Unit filename="Quadrature.cpp" />
 		<Unit filename="Quadrature.hpp" />
+		<Unit filename="Quadrilateral.cpp" />
+		<Unit filename="Quadrilateral.hpp" />
+		<Unit filename="SP_FEM.hpp" />
+		<Unit filename="Triangle.cpp" />
+		<Unit filename="Triangle.hpp" />
 		<Unit filename="Vector.cpp" />
 		<Unit filename="Vector.hpp" />
 		<Extensions>

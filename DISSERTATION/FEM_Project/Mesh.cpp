@@ -21,7 +21,8 @@ Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
         {
             for (int i=0; i<mNumElements; i++)
             {
-                mElementsArray[i] = new Element(Element::ElementType::Interval);
+
+                mElementsArray[i] = new Interval(mConnectivity->GetRowAsVector(i));
             }
         } break;
 
@@ -41,11 +42,11 @@ Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
                 {
                     case 3:
                     {
-                        mElementsArray[i] = new Element(Element::ElementType::Triangle);
+                        mElementsArray[i] = new Triangle(mConnectivity->GetRowAsVector(i));
                     }
                     case 4:
                     {
-                        mElementsArray[i] = new Element(Element::ElementType::Quad);
+                        mElementsArray[i] = new Quadrilateral(mConnectivity->GetRowAsVector(i));
                     }
                 }
             }

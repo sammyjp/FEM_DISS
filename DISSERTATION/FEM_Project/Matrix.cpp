@@ -71,7 +71,7 @@ int Matrix::GetNumberOfColumns() const
    return mNumCols;
 }
 
-Vector Matrix::GetRowAsVector(int rowNumber)
+Vector& Matrix::GetRowAsVector(int rowNumber)
 {
     assert((rowNumber > 0) && (rowNumber <= mNumRows));
 
@@ -83,7 +83,7 @@ Vector Matrix::GetRowAsVector(int rowNumber)
     return vec;
 }
 
-Vector Matrix::GetColumnAsVector(int columnNumber)
+Vector& Matrix::GetColumnAsVector(int columnNumber)
 {
     assert((columnNumber > 0) && (columnNumber <= mNumCols));
 
