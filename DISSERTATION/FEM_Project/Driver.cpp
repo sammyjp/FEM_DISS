@@ -5,37 +5,38 @@
 
 int main(int argc, char* argv[])
 {
-    Matrix* GridPoints = new Matrix(2,5);
+    Matrix* Nodes = new Matrix(2,3);
+    (*Nodes)(1,1) = 0;
+    (*Nodes)(1,2) = 1;
+    (*Nodes)(1,3) = 0;
+    (*Nodes)(2,1) = 0;
+    (*Nodes)(2,2) = 0;
+    (*Nodes)(2,3) = 1;
+
+    Matrix* GridPoints = new Matrix(2,3);
     (*GridPoints)(1,1) = 0;
     (*GridPoints)(1,2) = 1;
     (*GridPoints)(1,3) = 0;
-    (*GridPoints)(1,4) = 0.5;
-    (*GridPoints)(1,5) = 0.75;
     (*GridPoints)(2,1) = 0;
     (*GridPoints)(2,2) = 0;
-    (*GridPoints)(2,3) = 0.75;
-    (*GridPoints)(2,4) = 1;
-    (*GridPoints)(2,5) = 0.5;
+    (*GridPoints)(2,3) = 1;
 
+    Vector* Connectivity = new Vector(3);
+    (*Connectivity)[0] = 1;
+    (*Connectivity)[1] = 2;
+    (*Connectivity)[2] = 3;
 
-    std::cout << *GridPoints;
+    Triangle* Tri = new Triangle(*Connectivity);
 
-    Matrix* Connectivity = new Matrix(2,4);
-    (*Connectivity)(1,1) = 1;
-    (*Connectivity)(1,2) = 2;
-    (*Connectivity)(1,3) = 3;
-    (*Connectivity)(1,4) = 0;
-    (*Connectivity)(2,1) = 2;
-    (*Connectivity)(2,2) = 5;
-    (*Connectivity)(2,3) = 4;
-    (*Connectivity)(2,4) = 3;
-    Mesh* M = new Mesh(*GridPoints, *Connectivity);
+    Matrix* globalPoints = new Matrix(2,3);
 
-    std::cout << M->GetElement(0)->GetElementConnectivityArray() << std::endl;
+    Tri->MapGlobalToLocal(*Nodes, *GridPoints, *globalPoints);
 
+    std::cout << *globalPoints << std::endl;
+
+    delete Nodes;
     delete GridPoints;
-    delete Connectivity;
-    delete M;
+    delete Tri;
 
     return 0;
 }
