@@ -8,6 +8,11 @@ Quadrilateral::Quadrilateral(Vector& elementConnectivity)
     mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
+Quadrilateral::Quadrilateral(Quadrilateral& otherQuadrilateral)
+{
+    mElementConnectivityArray = new Vector (*otherQuadrilateral.mElementConnectivityArray);
+}
+
 int Quadrilateral::GetElementType() const
 {
     return ElementType::Quadrilateral;

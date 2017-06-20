@@ -12,6 +12,8 @@ public:
 
     Interval(Vector elementConnectivity);
 
+    Interval(Interval& otherInterval);
+
     int GetElementType() const;
 
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);

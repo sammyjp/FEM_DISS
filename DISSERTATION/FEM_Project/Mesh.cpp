@@ -69,8 +69,8 @@ Mesh::Mesh(const Mesh& otherMesh)
     mNumElements = otherMesh.mNumElements;
     mNumNodes = otherMesh.mNumNodes;
 
-    mGridPoints = otherMesh.mGridPoints;
-    mConnectivity = otherMesh.mConnectivity;
+    mGridPoints = new Matrix (*otherMesh.mGridPoints);
+    mConnectivity = new Matrix (*otherMesh.mConnectivity);
 }
 
 // Destructor

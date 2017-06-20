@@ -8,6 +8,11 @@ Triangle::Triangle(Vector& elementConnectivity)
     mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
+Triangle::Triangle(Triangle& otherTriangle)
+{
+    mElementConnectivityArray = new Vector (*otherTriangle.mElementConnectivityArray);
+}
+
 int Triangle::GetElementType() const
 {
     return ElementType::Triangle;

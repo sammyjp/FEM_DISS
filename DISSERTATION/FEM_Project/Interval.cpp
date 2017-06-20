@@ -8,6 +8,11 @@ Interval::Interval(Vector elementConnectivity)
     mElementConnectivityArray = new Vector(elementConnectivity);
 }
 
+Interval::Interval(Interval& otherInterval)
+{
+    mElementConnectivityArray = new Vector (*otherInterval.mElementConnectivityArray);
+}
+
 int Interval::GetElementType() const
 {
     return ElementType::Interval;

@@ -12,6 +12,8 @@ public:
 
     Quadrilateral(Vector& elementConnectivity);
 
+    Quadrilateral(Quadrilateral& otherQuadrilateral);
+
     int GetElementType() const;
 
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);

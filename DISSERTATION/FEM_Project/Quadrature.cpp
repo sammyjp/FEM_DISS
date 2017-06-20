@@ -10,26 +10,40 @@ Quadrature::Quadrature(double startPoint, double endPoint, int numNodes)
 {
     mStartPoint = startPoint;
     mEndPoint = endPoint;
-    mNumNodes = numNodes;
+    mNumPoints = numNodes;
 
-    mGridPoints = new Vector(mNumNodes);
+    mGridPoints = new Vector(mNumPoints);
+}
+
+Quadrature::Quadrature(int numPoints, Matrix& ElementVertices, int ElementType)
+{
+    mNumPoints = numPoints;
+    mVertices = new Matrix (ElementVertices);
+    mElementType = ElementType;
+
+    mGridPoints = new Vector(mNumPoints);
 }
 
 Quadrature::Quadrature(Quadrature& otherQuadrature)
 {
     mStartPoint = otherQuadrature.mStartPoint;
     mEndPoint = otherQuadrature.mEndPoint;
-    mNumNodes = otherQuadrature.mNumNodes;
+
+    mNumPoints = otherQuadrature.mNumPoints;
+    mVertices = new Matrix (*otherQuadrature.mVertices);
+    mElementType = otherQuadrature.mElementType;
+    mGridPoints = new Vector (*otherQuadrature.mGridPoints);
 }
 
 Quadrature::~Quadrature()
 {
+    delete mVertices;
     delete mGridPoints;
 }
 
 Vector Quadrature::GetUniformGridPoints()
 {
-    mUniformStepSize = (mEndPoint-mStartPoint)/(mNumNodes-1);
+    mUniformStepSize = (mEndPoint-mStartPoint)/(mNumPoints-1);
 
     for (int i=0; i<mGridPoints->GetSize(); i++)
     {
@@ -82,9 +96,9 @@ void Quadrature::EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector&
     Vector* pn = new Vector(pointsToEvaluate);
     Vector* pn_next = new Vector(pointsToEvaluate.GetSize());
 
-    if (mNumNodes>1)
+    if (mNumPoints>1)
     {
-        for (int i=1; i<mNumNodes; i++)
+        for (int i=1; i<mNumPoints; i++)
         {
             for (int j=0; j<pn->GetSize(); j++)
             {
@@ -110,9 +124,9 @@ void Quadrature::EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEv
     (*pn) = 1;
     Vector* pn_next = new Vector(pointsToEvaluate.GetSize());
 
-    if (mNumNodes>1)
+    if (mNumPoints>1)
     {
-        for (int i=1; i<mNumNodes; i++)
+        for (int i=1; i<mNumPoints; i++)
         {
             for (int j=0; j<pn_next->GetSize(); j++)
             {
@@ -133,7 +147,7 @@ void Quadrature::EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEv
 void Quadrature::NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots)
 {
     assert(initialGuess.GetSize() == legendreRoots.GetSize());
-    assert(initialGuess.GetSize() == mNumNodes);
+    assert(initialGuess.GetSize() == mNumPoints);
 
     int iterationCounter = 0;
     double error;
@@ -167,11 +181,11 @@ Vector Quadrature::GetGQPoints()
 {
     double tolerance = 1e-12;
     int maxIterations = 1000;
-    Vector* initialGuess = new Vector (mNumNodes);
+    Vector* initialGuess = new Vector (mNumPoints);
 
-    for (int i=1; i<=mNumNodes; i++)
+    for (int i=1; i<=mNumPoints; i++)
     {
-        (*initialGuess)[i-1] = -cos((((2.0*i)-1.0)/(2.0*mNumNodes))*Pi);
+        (*initialGuess)[i-1] = -cos((((2.0*i)-1.0)/(2.0*mNumPoints))*Pi);
     }
 
     NewtonForLegendre(tolerance, maxIterations, (*initialGuess), (*mGridPoints));

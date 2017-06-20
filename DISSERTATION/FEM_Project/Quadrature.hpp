@@ -8,10 +8,11 @@ class Quadrature
 {
 private:
 
-    Matrix* boundaryNodes;
     double mStartPoint;
     double mEndPoint;
-    int mNumNodes;
+    int mNumPoints;
+    int mElementType;
+    Matrix* mVertices;
 
     Vector* mGridPoints;
 
@@ -22,11 +23,12 @@ private:
 
     void NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots);
 
-public:
     void EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints);
     void EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEvaluate, Vector& legendrePoints);
+
+public:
     // Specialised Constructor
-    Quadrature(int ElementType, Matrix& ElementBoundaryNodes);
+    Quadrature(int numPoints, Matrix& ElementVertices, int ElementType);
     Quadrature(double startPoint, double endPoint, int numNodes);
 
     // Copy Constructor

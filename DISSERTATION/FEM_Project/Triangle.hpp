@@ -12,6 +12,8 @@ public:
 
     Triangle(Vector& elementConnectivity);
 
+    Triangle(Triangle& otherTriangle);
+
     int GetElementType() const;
 
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
