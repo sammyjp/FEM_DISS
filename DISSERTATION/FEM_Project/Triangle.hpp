@@ -2,7 +2,7 @@
 #define TRIANGLEHEADERDEF
 
 #include "Element.hpp"
-#include "Quadrature.hpp"
+#include "QuadratureLibrary.hpp"
 
 class Triangle: public Element
 {
@@ -20,7 +20,6 @@ public:
     void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
 
     void ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian);
-
 };
 
 #endif

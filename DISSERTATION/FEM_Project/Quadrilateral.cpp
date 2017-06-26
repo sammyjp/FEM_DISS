@@ -32,5 +32,3 @@ void Quadrilateral::ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian)
 {
 
 }
-
-

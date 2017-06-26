@@ -65,4 +65,3 @@ void Triangle::ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian)
     Jacobian(2,1) = (nodes(2,2) - nodes(2,1))/2.0;
     Jacobian(2,2) = (nodes(2,3) - nodes(2,1))/2.0;
 }
-

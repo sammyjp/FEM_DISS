@@ -1,8 +1,7 @@
 #include <cmath>
 #include <cassert>
+
 #include "Mesh.hpp"
-#include "Matrix.hpp"
-#include "Vector.hpp"
 
 // Specialised Constructor
 Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)

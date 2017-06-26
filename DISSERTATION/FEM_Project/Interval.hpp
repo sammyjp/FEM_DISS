@@ -2,7 +2,7 @@
 #define INTERVALHEADERDEF
 
 #include "Element.hpp"
-#include "Quadrature.hpp"
+#include "QuadratureLibrary.hpp"
 
 class Interval: public Element
 {
@@ -10,7 +10,7 @@ private:
 
 public:
 
-    Interval(Vector elementConnectivity);
+    Interval(Vector& elementConnectivity);
 
     Interval(Interval& otherInterval);
 

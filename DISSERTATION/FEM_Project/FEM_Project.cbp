@@ -42,8 +42,8 @@
 		<Unit filename="Matrix.hpp" />
 		<Unit filename="Mesh.cpp" />
 		<Unit filename="Mesh.hpp" />
-		<Unit filename="Quadrature.cpp" />
-		<Unit filename="Quadrature.hpp" />
+		<Unit filename="QuadratureLibrary.cpp" />
+		<Unit filename="QuadratureLibrary.hpp" />
 		<Unit filename="Quadrilateral.cpp" />
 		<Unit filename="Quadrilateral.hpp" />
 		<Unit filename="SP_FEM.hpp" />

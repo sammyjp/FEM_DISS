@@ -2,8 +2,6 @@
 #include <cassert>
 
 #include "Element.hpp"
-#include "Matrix.hpp"
-#include "Vector.hpp"
 
 Element::~Element()
 {
@@ -13,4 +11,14 @@ Element::~Element()
 Vector Element::GetElementConnectivityArray() const
 {
     return *mElementConnectivityArray;
+}
+
+void Element::ComputeElementQuadraturePoints(Vector& quadraturePoints)
+{
+    QuadratureLibrary().GetGaussQuadraturePoints(quadraturePoints);
+}
+
+void Element::PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints)
+{
+
 }

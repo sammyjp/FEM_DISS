@@ -5,7 +5,6 @@
 #include "Interval.hpp"
 #include "Triangle.hpp"
 #include "Quadrilateral.hpp"
-
 #include "Matrix.hpp"
 #include "Vector.hpp"
 

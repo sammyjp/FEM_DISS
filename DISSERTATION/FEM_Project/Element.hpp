@@ -2,12 +2,13 @@
 #define ELEMENTHEADERDEF
 
 #include "Matrix.hpp"
-#include "Quadrature.hpp"
+#include "QuadratureLibrary.hpp"
 #include "Vector.hpp"
 
 class Element
 {
 protected:
+
     Vector* mElementConnectivityArray;
 
 public:
@@ -28,6 +29,8 @@ public:
     virtual void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords) = 0;
     virtual void ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian) = 0;
 
+    virtual void ComputeElementQuadraturePoints(Vector& quadraturePoints);
+    virtual void PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints);
 };
 
 #endif
