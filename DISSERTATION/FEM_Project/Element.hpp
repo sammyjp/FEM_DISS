@@ -30,7 +30,7 @@ public:
     virtual void ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian) = 0;
 
     virtual void ComputeElementQuadraturePoints(Vector& quadraturePoints);
-    virtual void PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints);
+    virtual double PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints, Matrix& mappingJacobian);
 };
 
 #endif

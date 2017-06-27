@@ -18,7 +18,7 @@ void Element::ComputeElementQuadraturePoints(Vector& quadraturePoints)
     QuadratureLibrary().GetGaussQuadraturePoints(quadraturePoints);
 }
 
-void Element::PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints)
+double Element::PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints, Matrix& mappingJacobian)
 {
-
+    return QuadratureLibrary().GaussQuadrature(GetElementType(), quadraturePoints, functionPoints, mappingJacobian.CalculateDeterminant());
 }
