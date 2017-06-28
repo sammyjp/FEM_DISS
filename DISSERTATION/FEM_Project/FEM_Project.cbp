@@ -47,6 +47,8 @@
 		<Unit filename="Quadrilateral.cpp" />
 		<Unit filename="Quadrilateral.hpp" />
 		<Unit filename="SP_FEM.hpp" />
+		<Unit filename="SparseMatrix.cpp" />
+		<Unit filename="SparseMatrix.hpp" />
 		<Unit filename="Triangle.cpp" />
 		<Unit filename="Triangle.hpp" />
 		<Unit filename="Vector.cpp" />

@@ -2,9 +2,44 @@
 #include <cmath>
 
 #include "SP_FEM.hpp"
+#include "SparseMatrix.hpp"
 
 int main(int argc, char* argv[])
 {
+
+    Matrix* HELLO = new Matrix(3,4);
+    (*HELLO)(1,1) = 1;
+    (*HELLO)(1,2) = 0;
+    (*HELLO)(1,3) = 3;
+    (*HELLO)(1,4) = 1;
+    (*HELLO)(2,1) = 0;
+    (*HELLO)(2,2) = 0;
+    (*HELLO)(2,3) = 2;
+    (*HELLO)(2,4) = 0;
+    (*HELLO)(3,1) = 1;
+    (*HELLO)(3,2) = 5;
+    (*HELLO)(3,3) = 0;
+    (*HELLO)(3,4) = 1;
+
+    Vector* vec = new Vector(4);
+    (*vec)[0] = 1;
+    (*vec)[1] = 2;
+    (*vec)[2] = 3;
+    (*vec)[3] = 4;
+
+    SparseMatrix* HI = new SparseMatrix(*HELLO);
+
+    for (int i=1; i<=HELLO->GetNumberOfRows(); i++)
+    {
+        for (int j=1; j<=HELLO->GetNumberOfColumns(); j++)
+        {
+            std::cout << HI->Read(i,j) << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+
     Matrix* gridPoints = new Matrix (1,3);
     (*gridPoints)(1,1) = 0;
     (*gridPoints)(1,2) = 0.5;
