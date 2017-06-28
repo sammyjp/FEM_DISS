@@ -53,7 +53,7 @@ void Triangle::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& loc
     }
 }
 
-void Triangle::ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian)
+void Triangle::ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian)
 {
     assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
     assert(Jacobian.GetNumberOfRows() == 2);

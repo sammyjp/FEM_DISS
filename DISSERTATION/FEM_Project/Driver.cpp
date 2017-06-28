@@ -30,17 +30,21 @@ int main(int argc, char* argv[])
         (*elementNodes)(1,2) = (*gridPoints)(1,i+2);
 
         M->GetElement(i)->ComputeElementQuadraturePoints(*quadraturePoints);
+        M->GetElement(i)->ComputeMappingJacobian(*elementNodes, *quadraturePoints, *jacobian);
+
+        QuadratureLibrary().TransformGQPoints((*elementNodes)(1,1),(*elementNodes)(1,2),*quadraturePoints);
         for (int j=0; j<quadraturePoints->GetSize(); j++)
         {
             (*functionPoints)[j] = (*quadraturePoints)[j];
         }
 
-        M->GetElement(i)->MapLocalToGlobal(*elementNodes, *functionPoints, *functionPoints);
-
-        M->GetElement(i)->ComputeMappingJacobian(*elementNodes, *jacobian);
         std::cout << M->GetElement(i)->PerformElementQuadrature(*quadraturePoints, *functionPoints, *jacobian) << std::endl;
-    }
 
+        delete quadraturePoints;
+        delete functionPoints;
+        delete elementNodes;
+        delete jacobian;
+    }
 
     delete M;
     delete gridPoints;

@@ -28,7 +28,7 @@ void Quadrilateral::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix
 
 }
 
-void Quadrilateral::ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian)
+void Quadrilateral::ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian)
 {
 
 }

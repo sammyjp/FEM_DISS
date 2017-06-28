@@ -8,7 +8,6 @@ class QuadratureLibrary
 {
 private:
 
-    void TransformGQPoints();
     void ComputeGQWeights(Vector& GQWeights, Vector& gaussPoints);
 
     void NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots);
@@ -20,6 +19,7 @@ public:
     // Default Constructor
     QuadratureLibrary();
 
+    void TransformGQPoints(double xStart, double xEnd, Vector& gaussPoints);
     void GetGaussQuadraturePoints(Vector& gaussPoints);
     double GaussQuadrature(int elementType, Vector& gaussPoints, Vector& functionPoints, double mappingJacobianDeterminant);
 

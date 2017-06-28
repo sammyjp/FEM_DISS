@@ -17,9 +17,10 @@ public:
     int GetElementType() const;
 
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
+    void MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords);
     void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
 
-    void ComputeMappingJacobian(Matrix& nodes, Matrix& Jacobian);
+    void ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian);
 
 };
 

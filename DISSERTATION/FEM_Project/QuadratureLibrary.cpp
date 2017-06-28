@@ -14,6 +14,14 @@ QuadratureLibrary::QuadratureLibrary()
 /*               GAUSS QUADRATURE               */
 //////////////////////////////////////////////////
 
+void QuadratureLibrary::TransformGQPoints(double xStart, double xEnd, Vector& gaussPoints)
+{
+    for (int i=0; i<gaussPoints.GetSize(); i++)
+    {
+        gaussPoints[i] = xStart + 0.5*(xEnd-xStart)*(gaussPoints[i] + 1);
+    }
+}
+
 void QuadratureLibrary::ComputeGQWeights(Vector& GQWeights, Vector& gaussPoints)
 {
     assert(GQWeights.GetSize() == gaussPoints.GetSize());
