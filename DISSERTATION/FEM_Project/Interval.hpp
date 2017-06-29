@@ -10,11 +10,12 @@ private:
 
 public:
 
-    Interval(Vector& elementConnectivity);
+    Interval(Vector& elementConnectivity, Mesh& meshReference);
 
     Interval(Interval& otherInterval);
 
     int GetElementType() const;
+    Matrix GetElementCoordinates() const;
 
     void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
     void MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords);

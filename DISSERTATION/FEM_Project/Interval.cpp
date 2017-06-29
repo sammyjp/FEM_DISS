@@ -3,9 +3,10 @@
 
 #include "Interval.hpp"
 
-Interval::Interval(Vector& elementConnectivity)
+Interval::Interval(Vector& elementConnectivity, Mesh& meshReference)
 {
     mElementConnectivityArray = new Vector(elementConnectivity);
+    mMeshReference = &meshReference;
 }
 
 Interval::Interval(Interval& otherInterval)
@@ -16,6 +17,11 @@ Interval::Interval(Interval& otherInterval)
 int Interval::GetElementType() const
 {
     return ElementType::Interval;
+}
+
+Matrix Interval::GetElementCoordinates() const
+{
+    return mMeshReference.GetGridPoints((*mElementConnectivityArray));
 }
 
 void Interval::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords)

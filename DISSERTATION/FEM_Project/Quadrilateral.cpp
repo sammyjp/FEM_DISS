@@ -3,9 +3,10 @@
 
 #include "Quadrilateral.hpp"
 
-Quadrilateral::Quadrilateral(Vector& elementConnectivity)
+Quadrilateral::Quadrilateral(Vector& elementConnectivity, Mesh& meshReference)
 {
     mElementConnectivityArray = new Vector(elementConnectivity);
+    mMeshReference = &meshReference;
 }
 
 Quadrilateral::Quadrilateral(Quadrilateral& otherQuadrilateral)

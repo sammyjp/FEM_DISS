@@ -8,6 +8,7 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
 
+
 class Mesh
 {
 private:
@@ -17,14 +18,12 @@ private:
     int mNumNodes;
 
     Matrix* mGridPoints;
-    Matrix* mConnectivity;
-
     Element** mElementsArray;
 
 public:
 
     // Specialised Constructor
-    Mesh(Matrix& gridPoints, Matrix& connectivity);
+    Mesh(Matrix& gridPoints, int numElements);
 
     // Copy Constructor
     Mesh(const Mesh& otherMesh);
@@ -32,15 +31,16 @@ public:
     // Destructor
     ~Mesh();
 
+    void InitialiseElement(int elementNumber, Vector& connectvity, int elementType);
+
     int GetDimension() const;
     int GetNumElements() const;
     int GetNumNodes() const;
 
     Element* GetElement(int elementArrayIndex) const;
 
-    Matrix GetGridPoints() const;
-    Matrix GetConnectivityArray() const;
-
+    Matrix GetAllGridPoints() const;
+    Matrix GetGridPoints(Vector& elementConnectivityArray) const;
 };
 
 #endif

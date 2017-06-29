@@ -2,6 +2,7 @@
 #include <cassert>
 
 #include "Element.hpp"
+#include "Mesh.hpp"
 
 Element::~Element()
 {

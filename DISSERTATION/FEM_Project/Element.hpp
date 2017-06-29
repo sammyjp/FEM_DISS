@@ -5,11 +5,14 @@
 #include "QuadratureLibrary.hpp"
 #include "Vector.hpp"
 
+class Mesh;
+
 class Element
 {
 protected:
 
     Vector* mElementConnectivityArray;
+    Mesh* mMeshReference;
 
 public:
 
@@ -23,6 +26,7 @@ public:
     virtual ~Element();
 
     virtual int GetElementType() const = 0;
+    virtual Matrix GetElementCoordinates() const = 0;
     virtual Vector GetElementConnectivityArray() const;
 
     virtual void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords) = 0;

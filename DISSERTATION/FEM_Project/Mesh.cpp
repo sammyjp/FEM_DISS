@@ -4,61 +4,14 @@
 #include "Mesh.hpp"
 
 // Specialised Constructor
-Mesh::Mesh(Matrix& gridPoints, Matrix& connectivity)
+Mesh::Mesh(Matrix& gridPoints, int numElements)
 {
     mDimension = gridPoints.GetNumberOfRows();
-    mNumNodes = gridPoints.GetNumberOfRows();
-    mNumElements = connectivity.GetNumberOfRows();
+    mNumNodes = gridPoints.GetNumberOfColumns();
+    mNumElements = numElements;
 
     mGridPoints = new Matrix(gridPoints);
-    mConnectivity = new Matrix(connectivity);
     mElementsArray = new Element* [mNumElements];
-
-    switch(mDimension)
-    {
-        case 1:
-        {
-            for (int i=1; i<=mNumElements; i++)
-            {
-                Vector* elementConnectivity =  new Vector(mConnectivity->GetRowAsVector(i));
-                mElementsArray[i-1] = new Interval(*elementConnectivity);
-                delete elementConnectivity;
-            }
-        } break;
-
-        case 2:
-        {
-            for (int i=1; i<=mNumElements; i++)
-            {
-                int nonZeros = 0;
-                for (int j=1; j<=connectivity.GetNumberOfColumns(); j++)
-                {
-                    if (connectivity(i,j) != 0)
-                    {
-                        nonZeros++;
-                    }
-                }
-
-                Vector* elementConnectivity =  new Vector(mConnectivity->GetRowAsVector(i));
-
-                switch(nonZeros)
-                {
-                    case 3:
-                    {
-                        mElementsArray[i-1] = new Triangle(*elementConnectivity);
-                    } break;
-
-                    case 4:
-                    {
-                        mElementsArray[i-1] = new Quadrilateral(*elementConnectivity);
-                    } break;
-                }
-                delete elementConnectivity;
-            }
-        } break;
-    }
-
-
 }
 
 // Copy Constructor
@@ -69,7 +22,12 @@ Mesh::Mesh(const Mesh& otherMesh)
     mNumNodes = otherMesh.mNumNodes;
 
     mGridPoints = new Matrix (*otherMesh.mGridPoints);
-    mConnectivity = new Matrix (*otherMesh.mConnectivity);
+    mElementsArray = new Element* [mNumElements];
+
+    for (int i=0; i<mNumElements; i++)
+    {
+        mElementsArray[i] = otherMesh.mElementsArray[i];
+    }
 }
 
 // Destructor
@@ -82,13 +40,31 @@ Mesh::~Mesh()
     delete[] mElementsArray;
 
     delete mGridPoints;
-    delete mConnectivity;
+}
+
+void Mesh::InitialiseElement(int elementNumber, Vector& connectvity, int elementType)
+{
+    switch(elementType)
+    {
+    case 0:
+        {
+            mElementsArray[elementNumber - 1] = new Interval(connectvity, *this);
+        } break;
+    case 1:
+        {
+            mElementsArray[elementNumber - 1] = new Triangle(connectvity, *this);
+        } break;
+    case 2:
+        {
+            mElementsArray[elementNumber - 1] = new Quadrilateral(connectvity, *this);
+        } break;
+    }
 }
 
 Element* Mesh::GetElement(int elementArrayIndex) const
 {
-    assert(elementArrayIndex >= 0 && elementArrayIndex < mNumElements);
-    return mElementsArray[elementArrayIndex];
+    assert(elementArrayIndex > 0 && elementArrayIndex <= mNumElements);
+    return mElementsArray[elementArrayIndex-1];
 }
 
 int Mesh::GetDimension() const
@@ -106,12 +82,21 @@ int Mesh::GetNumNodes() const
     return mNumNodes;
 }
 
-Matrix Mesh::GetGridPoints() const
+Matrix Mesh::GetAllGridPoints() const
 {
     return *mGridPoints;
 }
 
-Matrix Mesh::GetConnectivityArray() const
+Matrix Mesh::GetGridPoints(Vector& elementConnectivityArray) const
 {
-    return *mConnectivity;
+    Matrix mat(mDimension, elementConnectivityArray.GetSize());
+
+    for (int i=1; i<=mat.GetNumberOfRows(); i++)
+    {
+        for (int j=1; j<=mat.GetNumberOfColumns(); j++)
+        {
+            mat(i,j) = (*mGridPoints)(i,elementConnectivityArray[j-1]);
+        }
+    }
+    return mat;
 }

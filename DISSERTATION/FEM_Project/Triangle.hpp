@@ -10,7 +10,7 @@ private:
 
 public:
 
-    Triangle(Vector& elementConnectivity);
+    Triangle(Vector& elementConnectivity, Mesh& meshReference);
 
     Triangle(Triangle& otherTriangle);
 

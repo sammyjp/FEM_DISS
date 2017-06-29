@@ -10,7 +10,7 @@ private:
 
 public:
 
-    Quadrilateral(Vector& elementConnectivity);
+    Quadrilateral(Vector& elementConnectivity, Mesh& meshReference);
 
     Quadrilateral(Quadrilateral& otherQuadrilateral);
 

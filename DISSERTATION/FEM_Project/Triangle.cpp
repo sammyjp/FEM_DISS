@@ -3,9 +3,10 @@
 
 #include "Triangle.hpp"
 
-Triangle::Triangle(Vector& elementConnectivity)
+Triangle::Triangle(Vector& elementConnectivity, Mesh& meshReference)
 {
     mElementConnectivityArray = new Vector(elementConnectivity);
+    mMeshReference = &meshReference;
 }
 
 Triangle::Triangle(Triangle& otherTriangle)
