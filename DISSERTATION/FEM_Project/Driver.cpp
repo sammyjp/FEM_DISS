@@ -6,61 +6,50 @@
 
 int main(int argc, char* argv[])
 {
-    int numElements = 3;
+    int numElements = 1;
 
-    Matrix* Grid = new Matrix (1,4);
+    Matrix* Grid = new Matrix (2,4);
     (*Grid)(1,1) = 0;
+    (*Grid)(2,1) = 0;
     (*Grid)(1,2) = 1;
-    (*Grid)(1,3) = 2;
-    (*Grid)(1,4) = 3;
+    (*Grid)(2,2) = 0;
+    (*Grid)(1,3) = 0;
+    (*Grid)(2,3) = 1;
+    (*Grid)(1,4) = 1;
+    (*Grid)(2,4) = 1;
 
-    Vector* Connectivity1 = new Vector (2);
-    Vector* Connectivity2 = new Vector (2);
-    Vector* Connectivity3 = new Vector (2);
+    Vector* Connectivity1 = new Vector (4);
     (*Connectivity1)(1) = 1;
     (*Connectivity1)(2) = 2;
-    (*Connectivity2)(1) = 2;
-    (*Connectivity2)(2) = 3;
-    (*Connectivity3)(1) = 3;
-    (*Connectivity3)(2) = 4;
+    (*Connectivity1)(3) = 4;
+    (*Connectivity1)(4) = 3;
 
     Mesh* myMesh = new Mesh(*Grid, numElements);
 
-    myMesh->InitialiseElement(1, *Connectivity1, 0);
-    myMesh->InitialiseElement(2, *Connectivity2, 0);
-    myMesh->InitialiseElement(3, *Connectivity3, 0);
+    myMesh->InitialiseElement(1, *Connectivity1, 2);
 
-    int n_q = 3;
+    int n_q = 9;
     Vector* quadratureWeights = new Vector (n_q);
-    Matrix* quadraturePoints = new Matrix (1,n_q);
-    Matrix* jacobian = new Matrix (1,1);
-    Vector* jacobianDeterminant = new Vector (n_q);
+    Matrix* localQuadraturePoints = new Matrix (2,n_q);
+    Matrix* globalQuadraturePoints = new Matrix (2,n_q);
     double I;
 
     Vector* functionPoints = new Vector (n_q);
 
     for (int i=1; i<=numElements; i++)
     {
-        I = 0;
-        myMesh->GetElement(i)->GetQuadrature(n_q, *quadratureWeights, *quadraturePoints);
+        myMesh->GetElement(i)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
         for (int j=1; j<=functionPoints->GetSize(); j++)
         {
-            (*functionPoints)(j) = pow((*quadraturePoints)(1,j),2.0);
+            (*functionPoints)(j) = pow((*globalQuadraturePoints)(1,j),2.0)+pow((*globalQuadraturePoints)(2,j),2.0);
+        }
 
-            Vector* jacPoints = new Vector(quadraturePoints->GetColumnAsVector(j));
-            myMesh->GetElement(i)->ComputeMappingJacobian(*jacPoints, *jacobian);
-            delete jacPoints;
-            (*jacobianDeterminant)(j) = jacobian->CalculateDeterminant();
-        }
-        for (int j=1; j<=quadratureWeights->GetSize(); j++)
-        {
-            I += (*functionPoints)(j)*(*quadratureWeights)(j)*(*jacobianDeterminant)(j);
-        }
+        I = myMesh->GetElement(i)->PerformElementQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *functionPoints);
 
         std::cout << "Element " << i << ":" << std::endl << std::endl;
         std::cout << "Gauss weights =\n" << *quadratureWeights;
-        std::cout << "Gauss points =\n" << *quadraturePoints;
-        std::cout << "Jacobian determinant = " << jacobianDeterminant << std::endl;
+        std::cout << "Local Gauss points =\n" << *localQuadraturePoints;
+        std::cout << "Global Gauss points =\n" << *globalQuadraturePoints;
         std::cout << "Integral of f(x) = x on element = " << I << std::endl;
         std::cout << std::endl;
     }
@@ -68,11 +57,10 @@ int main(int argc, char* argv[])
 
     delete Grid;
     delete Connectivity1;
-    delete Connectivity2;
-    delete Connectivity3;
     delete myMesh;
     delete quadratureWeights;
-    delete quadraturePoints;
+    delete localQuadraturePoints;
+    delete globalQuadraturePoints;
     delete functionPoints;
 
     return 0;
