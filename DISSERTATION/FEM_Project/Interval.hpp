@@ -15,13 +15,11 @@ public:
     Interval(Interval& otherInterval);
 
     int GetElementType() const;
-    Matrix GetElementCoordinates() const;
 
-    void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords);
-    void MapLocalToGlobal(Vector& nodes, Vector& localCoords, Vector& globalCoords);
-    void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords);
+    void MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords);
+    void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords);
 
-    void ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian);
+    void ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian);
 
 };
 

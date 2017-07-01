@@ -19,45 +19,49 @@ int Interval::GetElementType() const
     return ElementType::Interval;
 }
 
-Matrix Interval::GetElementCoordinates() const
+void Interval::MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords)
 {
-    return mMeshReference.GetGridPoints((*mElementConnectivityArray));
-}
-
-void Interval::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords)
-{
+    Matrix* nodes = new Matrix (GetElementCoordinates());
     assert(localCoords.GetNumberOfRows() == globalCoords.GetNumberOfRows());
     assert(localCoords.GetNumberOfColumns() == globalCoords.GetNumberOfColumns());
     assert(localCoords.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfColumns() == 2);
+    assert(nodes->GetNumberOfRows() == 1);
+    assert(nodes->GetNumberOfColumns() == 2);
 
     for (int j=1; j<=globalCoords.GetNumberOfColumns(); j++)
     {
-        globalCoords(1,j) = nodes(1,1) + 0.5*(nodes(1,2)-nodes(1,1))*(localCoords(1,j)+1);
+        globalCoords(1,j) = (*nodes)(1,1) + 0.5*((*nodes)(1,2)-(*nodes)(1,1))*(localCoords(1,j)+1);
     }
+
+    delete nodes;
 }
 
-void Interval::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords)
+void Interval::MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords)
 {
+    Matrix* nodes = new Matrix (GetElementCoordinates());
     assert(globalCoords.GetNumberOfRows() == localCoords.GetNumberOfRows());
     assert(globalCoords.GetNumberOfColumns() == localCoords.GetNumberOfColumns());
     assert(globalCoords.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfColumns() == 2);
+    assert(nodes->GetNumberOfRows() == 1);
+    assert(nodes->GetNumberOfColumns() == 2);
 
     for (int j=1; j<=localCoords.GetNumberOfColumns(); j++)
     {
-        localCoords(1,j) = (nodes(1,1) + nodes(1,2) - 2*globalCoords(1,j))/(nodes(1,1) - nodes(1,2));
+        localCoords(1,j) = ((*nodes)(1,1) + (*nodes)(1,2) - 2*globalCoords(1,j))/((*nodes)(1,1) - (*nodes)(1,2));
     }
+
+    delete nodes;
 }
 
-void Interval::ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian)
+void Interval::ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian)
 {
+    Matrix* nodes = new Matrix (GetElementCoordinates());
     assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
     assert(Jacobian.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfRows() == 1);
-    assert(nodes.GetNumberOfColumns() == 2);
+    assert(nodes->GetNumberOfRows() == 1);
+    assert(nodes->GetNumberOfColumns() == 2);
 
-    Jacobian(1,1) = 0.5*(nodes(1,2) - nodes(1,1));
+    Jacobian(1,1) = 0.5*((*nodes)(1,2) - (*nodes)(1,1));
+
+    delete nodes;
 }

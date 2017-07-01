@@ -9,6 +9,7 @@ class QuadratureLibrary
 private:
 
     void ComputeGQWeights(Vector& GQWeights, Vector& gaussPoints);
+    void ComputeGQPoints(Vector& gaussPoints);
 
     void NewtonForLegendre(double tolerance, int maxIterations, Vector& initialGuess, Vector& legendreRoots);
 
@@ -19,12 +20,9 @@ public:
     // Default Constructor
     QuadratureLibrary();
 
-    void TransformGQPoints(double xStart, double xEnd, Vector& gaussPoints);
-    void GetGaussQuadraturePoints(Vector& gaussPoints);
+    void Quadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints);
+
     double GaussQuadrature(int elementType, Vector& gaussPoints, Vector& functionPoints, double mappingJacobianDeterminant);
-
-    double TrapezoidRule1D(Vector& gridPoints, Vector& functionPoints);
-
 };
 
 #endif

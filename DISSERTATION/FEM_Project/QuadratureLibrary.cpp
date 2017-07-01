@@ -2,7 +2,6 @@
 #include <cassert>
 
 #include "QuadratureLibrary.hpp"
-#include "Vector.hpp"
 
 const double Pi = 4*atan(1);
 
@@ -13,14 +12,6 @@ QuadratureLibrary::QuadratureLibrary()
 //////////////////////////////////////////////////
 /*               GAUSS QUADRATURE               */
 //////////////////////////////////////////////////
-
-void QuadratureLibrary::TransformGQPoints(double xStart, double xEnd, Vector& gaussPoints)
-{
-    for (int i=0; i<gaussPoints.GetSize(); i++)
-    {
-        gaussPoints[i] = xStart + 0.5*(xEnd-xStart)*(gaussPoints[i] + 1);
-    }
-}
 
 void QuadratureLibrary::ComputeGQWeights(Vector& GQWeights, Vector& gaussPoints)
 {
@@ -36,6 +27,21 @@ void QuadratureLibrary::ComputeGQWeights(Vector& GQWeights, Vector& gaussPoints)
     }
 
     delete legendreDeriv;
+}
+
+void QuadratureLibrary::ComputeGQPoints(Vector& gaussPoints)
+{
+    double tolerance = 1e-12;
+    int maxIterations = 1000;
+    Vector* initialGuess = new Vector (gaussPoints.GetSize());
+
+    for (int i=1; i<=gaussPoints.GetSize(); i++)
+    {
+        (*initialGuess)[i-1] = -cos((((2.0*i)-1.0)/(2.0*gaussPoints.GetSize()))*Pi);
+    }
+
+    NewtonForLegendre(tolerance, maxIterations, (*initialGuess), gaussPoints);
+    delete initialGuess;
 }
 
 void QuadratureLibrary::EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints)
@@ -125,19 +131,66 @@ void QuadratureLibrary::NewtonForLegendre(double tolerance, int maxIterations, V
     delete legendreDeriv;
 }
 
-void QuadratureLibrary::GetGaussQuadraturePoints(Vector& gaussPoints)
+void QuadratureLibrary::Quadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints)
 {
-    double tolerance = 1e-12;
-    int maxIterations = 1000;
-    Vector* initialGuess = new Vector (gaussPoints.GetSize());
+    int n;
+    assert(gaussPoints.GetNumberOfColumns() == n_q);
+    assert(weights.GetSize() == n_q);
 
-    for (int i=1; i<=gaussPoints.GetSize(); i++)
+    switch(elementType)
     {
-        (*initialGuess)[i-1] = -cos((((2.0*i)-1.0)/(2.0*gaussPoints.GetSize()))*Pi);
-    }
+    case 0:
+        {
+            assert(gaussPoints.GetNumberOfRows() == 1);
 
-    NewtonForLegendre(tolerance, maxIterations, (*initialGuess), gaussPoints);
-    delete initialGuess;
+            n = n_q;
+
+            Vector* gaussVec = new Vector(n);
+            Vector* weightVec = new Vector(n);
+            ComputeGQPoints(*gaussVec);
+            ComputeGQWeights(*weightVec, *gaussVec);
+
+            for (int j=1; j<=n; j++)
+            {
+                gaussPoints(1,j) = (*gaussVec)(j);
+            }
+
+            weights = (*weightVec);
+
+            delete gaussVec;
+            delete weightVec;
+        } break;
+
+    case 1:
+        {
+
+        } break;
+
+    case 2:
+        {
+            assert(gaussPoints.GetNumberOfRows() == 2);
+
+            n = sqrt(n_q);
+
+            Vector* gaussVec = new Vector(n);
+            Vector* weightVec = new Vector(n);
+            ComputeGQPoints(*gaussVec);
+            ComputeGQWeights(*weightVec, *gaussVec);
+
+            for (int i=1; i<=n; i++)
+            {
+                for (int j=1; j<=n; j++)
+                {
+                    gaussPoints(1,((i-1)*n)+j) = (*gaussVec)(i);
+                    gaussPoints(2,((i-1)*n)+j) = (*gaussVec)(j);
+                    weights((i-1)*n+j) = (*weightVec)(i)*(*weightVec)(j);
+                }
+            }
+
+            delete gaussVec;
+            delete weightVec;
+        } break;
+    }
 }
 
 double QuadratureLibrary::GaussQuadrature(int elementType, Vector& gaussPoints, Vector& functionPoints, double mappingJacobianDeterminant)
@@ -161,23 +214,5 @@ double QuadratureLibrary::GaussQuadrature(int elementType, Vector& gaussPoints, 
     }
 
     delete GQWeights;
-    return I;
-}
-
-//////////////////////////////////////////////////
-/*                 Trapezoid Rule               */
-//////////////////////////////////////////////////
-
-double QuadratureLibrary::TrapezoidRule1D(Vector& gridPoints, Vector& functionPoints)
-{
-    assert(gridPoints.GetSize() == functionPoints.GetSize());
-
-    double I = 0;
-
-    for (int i=0; i<functionPoints.GetSize()-1; i++)
-    {
-        I += (gridPoints[i+1] - gridPoints[i]) * (functionPoints[i+1] + functionPoints[i]);
-    }
-
     return I;
 }

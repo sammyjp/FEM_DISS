@@ -1,5 +1,5 @@
-#ifndef ELEMENTHEADERDEF
-#define ELEMENTHEADERDEF
+#ifndef CLASSELEMENTHEADERDEF
+#define CLASSELEMENTHEADERDEF
 
 #include "Matrix.hpp"
 #include "QuadratureLibrary.hpp"
@@ -26,15 +26,14 @@ public:
     virtual ~Element();
 
     virtual int GetElementType() const = 0;
-    virtual Matrix GetElementCoordinates() const = 0;
+    virtual Matrix GetElementCoordinates() const;
     virtual Vector GetElementConnectivityArray() const;
 
-    virtual void MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords) = 0;
-    virtual void MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords) = 0;
-    virtual void ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian) = 0;
+    virtual void MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords) = 0;
+    virtual void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords) = 0;
+    virtual void ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian) = 0;
 
-    virtual void ComputeElementQuadraturePoints(Vector& quadraturePoints);
-    virtual double PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints, Matrix& mappingJacobian);
+    virtual void GetQuadrature(const int n_q, Vector& quadratureWeights, Matrix& quadraturePoints);
 };
 
 #endif

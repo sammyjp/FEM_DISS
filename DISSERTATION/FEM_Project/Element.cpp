@@ -9,17 +9,21 @@ Element::~Element()
     delete mElementConnectivityArray;
 }
 
+Matrix Element::GetElementCoordinates() const
+{
+    return mMeshReference->GetGridPoints((*mElementConnectivityArray));
+}
+
 Vector Element::GetElementConnectivityArray() const
 {
     return *mElementConnectivityArray;
 }
 
-void Element::ComputeElementQuadraturePoints(Vector& quadraturePoints)
+void Element::GetQuadrature(const int n_q, Vector& quadratureWeights, Matrix& quadraturePoints)
 {
-    QuadratureLibrary().GetGaussQuadraturePoints(quadraturePoints);
-}
+    QuadratureLibrary().Quadrature(GetElementType(), n_q, quadratureWeights, quadraturePoints);
 
-double Element::PerformElementQuadrature(Vector& quadraturePoints, Vector& functionPoints, Matrix& mappingJacobian)
-{
-    return QuadratureLibrary().GaussQuadrature(GetElementType(), quadraturePoints, functionPoints, mappingJacobian.CalculateDeterminant());
+    Matrix* localPoints = new Matrix (quadraturePoints);
+    MapLocalToGlobal(*localPoints, quadraturePoints);
+    delete localPoints;
 }

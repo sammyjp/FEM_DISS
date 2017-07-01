@@ -64,7 +64,7 @@ void Mesh::InitialiseElement(int elementNumber, Vector& connectvity, int element
 Element* Mesh::GetElement(int elementArrayIndex) const
 {
     assert(elementArrayIndex > 0 && elementArrayIndex <= mNumElements);
-    return mElementsArray[elementArrayIndex-1];
+    return mElementsArray[elementArrayIndex - 1];
 }
 
 int Mesh::GetDimension() const

@@ -19,17 +19,17 @@ int Quadrilateral::GetElementType() const
     return ElementType::Quadrilateral;
 }
 
-void Quadrilateral::MapLocalToGlobal(Matrix& nodes, Matrix& localCoords, Matrix& globalCoords)
+void Quadrilateral::MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords)
 {
 
 }
 
-void Quadrilateral::MapGlobalToLocal(Matrix& nodes, Matrix& globalCoords, Matrix& localCoords)
+void Quadrilateral::MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords)
 {
 
 }
 
-void Quadrilateral::ComputeMappingJacobian(Matrix& nodes, Vector& pointsToEval, Matrix& Jacobian)
+void Quadrilateral::ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian)
 {
 
 }
