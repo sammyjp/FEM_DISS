@@ -8,25 +8,22 @@ int main(int argc, char* argv[])
 {
     int numElements = 1;
 
-    Matrix* Grid = new Matrix (2,4);
-    (*Grid)(1,1) = 0;
-    (*Grid)(2,1) = 0;
-    (*Grid)(1,2) = 1;
-    (*Grid)(2,2) = 0;
-    (*Grid)(1,3) = 0;
-    (*Grid)(2,3) = 1;
-    (*Grid)(1,4) = 1;
-    (*Grid)(2,4) = 1;
+    Matrix* Grid = new Matrix (2,3);
+    (*Grid)(1,1) = 1;
+    (*Grid)(2,1) = 1.5;
+    (*Grid)(1,2) = 2;
+    (*Grid)(2,2) = 1;
+    (*Grid)(1,3) = 2;
+    (*Grid)(2,3) = 2;
 
-    Vector* Connectivity1 = new Vector (4);
+    Vector* Connectivity1 = new Vector (3);
     (*Connectivity1)(1) = 1;
     (*Connectivity1)(2) = 2;
-    (*Connectivity1)(3) = 4;
-    (*Connectivity1)(4) = 3;
+    (*Connectivity1)(3) = 3;
 
     Mesh* myMesh = new Mesh(*Grid, numElements);
 
-    myMesh->InitialiseElement(1, *Connectivity1, 2);
+    myMesh->InitialiseElement(1, *Connectivity1, 1);
 
     int n_q = 9;
     Vector* quadratureWeights = new Vector (n_q);
@@ -50,7 +47,7 @@ int main(int argc, char* argv[])
         std::cout << "Gauss weights =\n" << *quadratureWeights;
         std::cout << "Local Gauss points =\n" << *localQuadraturePoints;
         std::cout << "Global Gauss points =\n" << *globalQuadraturePoints;
-        std::cout << "Integral of f(x) = x on element = " << I << std::endl;
+        std::cout << "Integral of f(x)=x^2+y^2 on element = " << I << std::endl;
         std::cout << std::endl;
     }
 

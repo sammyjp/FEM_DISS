@@ -131,6 +131,20 @@ void QuadratureLibrary::NewtonForLegendre(double tolerance, int maxIterations, V
     delete legendreDeriv;
 }
 
+void QuadratureLibrary::MapReferenceQuadrilateralToTriangle(Matrix& quadrilateralPoints, Matrix& trianglePoints)
+{
+    assert(trianglePoints.GetNumberOfRows() == quadrilateralPoints.GetNumberOfRows());
+    assert(trianglePoints.GetNumberOfColumns() == quadrilateralPoints.GetNumberOfColumns());
+    assert(trianglePoints.GetNumberOfRows() == 2);
+
+    for (int j=1; j<=trianglePoints.GetNumberOfColumns(); j++)
+    {
+        trianglePoints(1,j) = 0.5*(-1 + quadrilateralPoints(1,j) - quadrilateralPoints(2,j) - quadrilateralPoints(1,j)*quadrilateralPoints(2,j));
+        trianglePoints(2,j) = quadrilateralPoints(2,j);
+    }
+}
+
+
 void QuadratureLibrary::Quadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints)
 {
     int n;
@@ -163,7 +177,36 @@ void QuadratureLibrary::Quadrature(const int elementType, const int n_q, Vector&
 
     case 1:
         {
+            assert(gaussPoints.GetNumberOfRows() == 2);
 
+            n = sqrt(n_q);
+
+            Vector* gaussVec = new Vector(n);
+            Vector* weightVec = new Vector(n);
+            ComputeGQPoints(*gaussVec);
+            ComputeGQWeights(*weightVec, *gaussVec);
+
+            for (int i=1; i<=n; i++)
+            {
+                for (int j=1; j<=n; j++)
+                {
+                    gaussPoints(1,((i-1)*n)+j) = (*gaussVec)(i);
+                    gaussPoints(2,((i-1)*n)+j) = (*gaussVec)(j);
+                    weights((i-1)*n+j) = (*weightVec)(i)*(*weightVec)(j);
+                }
+            }
+
+            delete gaussVec;
+            delete weightVec;
+
+            Matrix* quadrilateralPoints = new Matrix(gaussPoints);
+            MapReferenceQuadrilateralToTriangle(*quadrilateralPoints, gaussPoints);
+            delete quadrilateralPoints;
+
+            for (int j=1; j<=weights.GetSize(); j++)
+            {
+                weights(j) = weights(j)*((1-gaussPoints(2,j))*0.5);
+            }
         } break;
 
     case 2:

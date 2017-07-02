@@ -16,6 +16,8 @@ private:
     void EvaluateNthLegendrePolynomial(Vector& pointsToEvaluate, Vector& legendrePoints);
     void EvaluateNthLegendrePolynomialFirstDerivative(Vector& pointsToEvaluate, Vector& legendrePoints);
 
+    void MapReferenceQuadrilateralToTriangle(Matrix& quadrilateralPoints, Matrix& trianglePoints);
+
 public:
     // Default Constructor
     QuadratureLibrary();
