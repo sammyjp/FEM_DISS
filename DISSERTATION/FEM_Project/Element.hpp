@@ -1,5 +1,5 @@
-#ifndef CLASSELEMENTHEADERDEF
-#define CLASSELEMENTHEADERDEF
+#ifndef ABSTRACTELEMENTHEADERDEF
+#define ABSTRACTELEMENTHEADERDEF
 
 #include "Matrix.hpp"
 #include "QuadratureLibrary.hpp"

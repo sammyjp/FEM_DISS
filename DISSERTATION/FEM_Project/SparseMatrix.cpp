@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cassert>
+#include <iomanip>
 
 #include "SparseMatrix.hpp"
 
@@ -129,6 +130,25 @@ int SparseMatrix::GetNumberOfColumns() const
     return mNumCols;
 }
 
+std::ostream& operator<<(std::ostream& output, const SparseMatrix& m)
+{
+  for (int i=1; i<=m.GetNumberOfRows(); i++)
+  {
+    for (int j=1; j<=m.GetNumberOfColumns(); j++)
+    {
+      output << std::setw(14)
+             << std::setprecision(5)
+	     << std::scientific
+	     << m.Read(i,j);
+    }
+    output << std::endl;
+  }
+  output << std::endl;
+
+  return output;
+
+}
+
 Vector operator*(const SparseMatrix& m, const Vector& v)
 {
     int original_vector_size = v.GetSize();
@@ -147,22 +167,37 @@ Vector operator*(const SparseMatrix& m, const Vector& v)
     return new_vector;
 }
 
-Vector operator*(const Vector& v, const SparseMatrix& m)
+void SparseMatrix::CGSolveSystem(const Vector& rightHandVector, Vector& solutionVector, double tolerance, int maxIterations)
 {
-    int original_vector_size = v.GetSize();
-    assert(m.GetNumberOfRows() == original_vector_size);
-    int new_vector_length = m.GetNumberOfColumns();
-    Vector new_vector(new_vector_length);
+    assert(mNumCols == solutionVector.GetSize());
+    assert(mNumRows == rightHandVector.GetSize());
 
-    ////TODO////
+    int iterationCounter = 0;
+    Vector* r = new Vector (rightHandVector.GetSize());
+    Vector* r_prev = new Vector (rightHandVector.GetSize());
+    Vector* p = new Vector (r->GetSize());
+    Vector* w = new Vector (mNumRows);
+    double alpha;
+    double beta;
 
-//    for (int i=0; i<new_vector_length; i++)
-//    {
-//        for (int j=0; j<original_vector_size; j++)
-//        {
-//            new_vector[i] += v.Read(j)*m.mData[j][i];
-//        }
-//    }
+    (*r) = rightHandVector - ((*this)*solutionVector);
+    (*p) = (*r);
 
-    return new_vector;
+    do
+    {
+        (*w) = (*this)*(*p);
+        alpha = (r->ScalarProduct((*r)))/(p->ScalarProduct((*w)));
+        solutionVector = solutionVector + ((*p)*alpha);
+        (*r_prev) = (*r);
+        (*r) = (*r_prev) - ((*w)*alpha);
+        beta = (r->ScalarProduct((*r)))/(r_prev->ScalarProduct((*r_prev)));
+        (*p) = (*r) + ((*p)*beta);
+
+        iterationCounter++;
+    } while (r->CalculateNorm(2) > tolerance && iterationCounter <= maxIterations);
+
+    delete r;
+    delete r_prev;
+    delete p;
+    delete w;
 }

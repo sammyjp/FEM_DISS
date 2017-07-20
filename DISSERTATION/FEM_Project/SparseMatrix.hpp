@@ -35,10 +35,11 @@ public:
     int ReadRowPointerArray(int i) const;
     int ReadColumnIndexArray(int i) const;
 
+    friend std::ostream& operator<<(std::ostream& output, const SparseMatrix& m);
+
     friend Vector operator*(const SparseMatrix& m, const Vector& v);
-    friend Vector operator*(const Vector& v, const SparseMatrix& m);
 
-
+    void CGSolveSystem(const Vector& rightHandVector, Vector& solutionVector, double tolerance, int maxIterations);
 
 };
 

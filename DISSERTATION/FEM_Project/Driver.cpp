@@ -6,6 +6,35 @@
 
 int main(int argc, char* argv[])
 {
+    Matrix* myMatrix = new Matrix(3,3);
+    (*myMatrix)(1,1) = 1;
+    (*myMatrix)(1,2) = 2;
+    (*myMatrix)(1,3) = 0;
+    (*myMatrix)(2,1) = 2;
+    (*myMatrix)(2,2) = 0;
+    (*myMatrix)(2,3) = 1;
+    (*myMatrix)(3,1) = 0;
+    (*myMatrix)(3,2) = 1;
+    (*myMatrix)(3,3) = 4;
+
+    Vector* vec = new Vector(3);
+    (*vec)(1) = 4;
+    (*vec)(2) = 3;
+    (*vec)(3) = 2;
+
+    Vector* sol = new Vector(3);
+
+    SparseMatrix* mySP = new SparseMatrix(*myMatrix);
+
+    std::cout << *mySP << std::endl;
+
+    mySP->CGSolveSystem(*vec, *sol, 1e-9, 1000);
+
+    std::cout << *sol;
+
+
+    return 0;
+
     int numElements = 1;
 
     Matrix* Grid = new Matrix (2,3);
