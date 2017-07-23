@@ -6,6 +6,11 @@
 
 int main(int argc, char* argv[])
 {
+
+    //TODO create polynomial (deal 2 fe) class
+    //TODO in polynomial class have the basis shape functions with methods to evaluate on functions
+    //TODO add DOFs into FE_Solution class
+
     Matrix* myMatrix = new Matrix(3,3);
     (*myMatrix)(1,1) = 1;
     (*myMatrix)(1,2) = 2;
