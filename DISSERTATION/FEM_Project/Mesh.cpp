@@ -90,12 +90,11 @@ Matrix Mesh::GetAllGridPoints() const
 Matrix Mesh::GetGridPoints(Vector& elementConnectivityArray) const
 {
     Matrix mat(mDimension, elementConnectivityArray.GetSize());
-
     for (int i=1; i<=mat.GetNumberOfRows(); i++)
     {
         for (int j=1; j<=mat.GetNumberOfColumns(); j++)
         {
-            mat(i,j) = (*mGridPoints)(i,elementConnectivityArray[j-1]);
+            mat(i,j) = (*mGridPoints)(i,elementConnectivityArray(j));
         }
     }
     return mat;

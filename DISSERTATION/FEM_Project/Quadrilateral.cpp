@@ -9,7 +9,7 @@ Quadrilateral::Quadrilateral(Vector& elementConnectivity, Mesh& meshReference)
     mMeshReference = &meshReference;
 }
 
-Quadrilateral::Quadrilateral(Quadrilateral& otherQuadrilateral)
+Quadrilateral::Quadrilateral(const Quadrilateral& otherQuadrilateral)
 {
     mElementConnectivityArray = new Vector (*otherQuadrilateral.mElementConnectivityArray);
 }

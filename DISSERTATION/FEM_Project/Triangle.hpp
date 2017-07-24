@@ -12,7 +12,7 @@ public:
 
     Triangle(Vector& elementConnectivity, Mesh& meshReference);
 
-    Triangle(Triangle& otherTriangle);
+    Triangle(const Triangle& otherTriangle);
 
     int GetElementType() const;
 

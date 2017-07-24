@@ -10,18 +10,13 @@ private:
 
     Mesh* mMesh;
 
-
 public:
 
-    // Specialised Constructor
     FE_Solution(Mesh& mesh);
 
-    // Destructor
-    ~FE_Solution();
+    void ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Matrix& x);
 
-    void ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Vector& x);
-
-    void ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Vector& x);
+    void ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Matrix& x);
 
 };
 

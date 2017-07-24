@@ -34,10 +34,7 @@
 		<Unit filename="Driver.cpp" />
 		<Unit filename="Element.cpp" />
 		<Unit filename="Element.hpp" />
-		<Unit filename="FE_Solution.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="FE_Solution.cpp" />
 		<Unit filename="FE_Solution.hpp" />
 		<Unit filename="Interval.cpp" />
 		<Unit filename="Interval.hpp" />

@@ -12,7 +12,7 @@ public:
 
     Quadrilateral(Vector& elementConnectivity, Mesh& meshReference);
 
-    Quadrilateral(Quadrilateral& otherQuadrilateral);
+    Quadrilateral(const Quadrilateral& otherQuadrilateral);
 
     int GetElementType() const;
 

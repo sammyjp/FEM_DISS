@@ -9,7 +9,7 @@ Interval::Interval(Vector& elementConnectivity, Mesh& meshReference)
     mMeshReference = &meshReference;
 }
 
-Interval::Interval(Interval& otherInterval)
+Interval::Interval(const Interval& otherInterval)
 {
     mElementConnectivityArray = new Vector (*otherInterval.mElementConnectivityArray);
 }

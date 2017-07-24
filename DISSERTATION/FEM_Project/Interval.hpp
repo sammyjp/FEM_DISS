@@ -12,7 +12,7 @@ public:
 
     Interval(Vector& elementConnectivity, Mesh& meshReference);
 
-    Interval(Interval& otherInterval);
+    Interval(const Interval& otherInterval);
 
     int GetElementType() const;
 

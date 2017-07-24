@@ -9,7 +9,7 @@ Triangle::Triangle(Vector& elementConnectivity, Mesh& meshReference)
     mMeshReference = &meshReference;
 }
 
-Triangle::Triangle(Triangle& otherTriangle)
+Triangle::Triangle(const Triangle& otherTriangle)
 {
     mElementConnectivityArray = new Vector (*otherTriangle.mElementConnectivityArray);
 }

@@ -3,38 +3,32 @@
 
 #include "Element.hpp"
 #include "FE_Solution.hpp"
+#include "Matrix.hpp"
 #include "Mesh.hpp"
 #include "Vector.hpp"
 
-
-// Specialised Constructor
 FE_Solution::FE_Solution(Mesh& mesh)
 {
-    mMesh = new Mesh(mesh);
+    mMesh = &mesh;
 }
 
-// Destructor
-FE_Solution::~FE_Solution()
+void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Matrix& x)
 {
-    delete mMesh;
-}
-
-void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Vector& x)
-{
-    assert(functionValues.GetSize() == x.GetSize());
+    assert(functionValues.GetSize() == x.GetNumberOfColumns());
+    i--;
     assert(i>=0&&i<=mMesh->GetNumElements());
 
     int N = mMesh->GetNumElements();
 
-    Vector* xGrid = new Vector(mMesh->GetGridPoints().GetRowAsVector(1));
+    Vector* xGrid = new Vector(mMesh->GetAllGridPoints().GetRowAsVector(1));
 
     if (i==0)
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i] <= x[j]) && (x[j] <= (*xGrid)[i+1]))
+            if (((*xGrid)[i] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i+1]))
             {
-                functionValues[j] = 1.0 - x[j]/((*xGrid)[i+1]-(*xGrid)[i]) + i;
+                functionValues[j] = 1.0 - x(1,j+1)/((*xGrid)[i+1]-(*xGrid)[i]) + i;
             }
             else
             {
@@ -44,11 +38,11 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
     }
     else if (i==N)
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i-1] <= x[j]) && (x[j] <= (*xGrid)[i]))
+            if (((*xGrid)[i-1] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i]))
             {
-                functionValues[j] = 1.0 + x[j]/((*xGrid)[i]-(*xGrid)[i-1]) - i;
+                functionValues[j] = 1.0 + x(1,j+1)/((*xGrid)[i]-(*xGrid)[i-1]) - i;
             }
             else
             {
@@ -58,15 +52,15 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
     }
     else
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i-1] <= x[j]) && (x[j] <= (*xGrid)[i]))
+            if (((*xGrid)[i-1] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i]))
             {
-                functionValues[j] = 1.0 + x[j]/((*xGrid)[i]-(*xGrid)[i-1]) - i;
+                functionValues[j] = 1.0 + x(1,j+1)/((*xGrid)[i]-(*xGrid)[i-1]) - i;
             }
-            else if (((*xGrid)[i] < x[j]) && (x[j] <= (*xGrid)[i+1]))
+            else if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i+1]))
             {
-                functionValues[j] = 1.0 - x[j]/((*xGrid)[i+1]-(*xGrid)[i]) + i;
+                functionValues[j] = 1.0 - x(1,j+1)/((*xGrid)[i+1]-(*xGrid)[i]) + i;
             }
             else
             {
@@ -78,24 +72,25 @@ void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues
     delete xGrid;
 }
 
-void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Vector& x)
+void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Matrix& x)
 {
-    assert(derivativeValues.GetSize() == x.GetSize());
+    assert(derivativeValues.GetSize() == x.GetNumberOfColumns());
+    i--;
     assert(i>=0&&i<=mMesh->GetNumElements());
 
     int N = mMesh->GetNumElements();
 
-    Vector* xGrid = new Vector(mMesh->GetGridPoints().GetRowAsVector(1));
+    Vector* xGrid = new Vector(mMesh->GetAllGridPoints().GetRowAsVector(1));
 
     if (i==0)
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i] < x[j]) && (x[j] < (*xGrid)[i+1]))
+            if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i+1]))
             {
                 derivativeValues[j] = -1.0/((*xGrid)[i+1]-(*xGrid)[i]);
             }
-            else if ((x[j] == (*xGrid)[i]) || (x[j] == (*xGrid)[i+1]))
+            else if ((x(1,j+1) == (*xGrid)[i]) || (x(1,j+1) == (*xGrid)[i+1]))
             {
                 derivativeValues[j] = NAN;
             }
@@ -107,13 +102,13 @@ void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& deri
     }
     else if (i==N)
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i-1] < x[j]) && (x[j] < (*xGrid)[i]))
+            if (((*xGrid)[i-1] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i]))
             {
                 derivativeValues[j] = 1.0/((*xGrid)[i]-(*xGrid)[i-1]);
             }
-            else if ((x[j] == (*xGrid)[i-1]) || (x[j] == (*xGrid)[i]))
+            else if ((x(1,j+1) == (*xGrid)[i-1]) || (x(1,j+1) == (*xGrid)[i]))
             {
                 derivativeValues[j] = NAN;
             }
@@ -125,17 +120,17 @@ void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& deri
     }
     else
     {
-        for (int j=0; j<x.GetSize(); j++)
+        for (int j=0; j<x.GetNumberOfColumns(); j++)
         {
-            if (((*xGrid)[i-1] < x[j]) && (x[j] < (*xGrid)[i]))
+            if (((*xGrid)[i-1] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i]))
             {
                 derivativeValues[j] = 1.0/((*xGrid)[i]-(*xGrid)[i-1]);
             }
-            else if (((*xGrid)[i] < x[j]) && (x[j] < (*xGrid)[i+1]))
+            else if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i+1]))
             {
                 derivativeValues[j] = -1.0/((*xGrid)[i+1]-(*xGrid)[i]);
             }
-            else if ((x[j] == (*xGrid)[i-1]) || (x[j] == (*xGrid)[i]) || (x[j] == (*xGrid)[i+1]))
+            else if ((x(1,j+1) == (*xGrid)[i-1]) || (x(1,j+1) == (*xGrid)[i]) || (x(1,j+1) == (*xGrid)[i+1]))
             {
                 derivativeValues[j] = NAN;
             }
