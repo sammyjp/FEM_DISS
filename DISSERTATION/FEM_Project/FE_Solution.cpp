@@ -7,9 +7,22 @@
 #include "Mesh.hpp"
 #include "Vector.hpp"
 
-FE_Solution::FE_Solution(Mesh& mesh)
+FE_Solution::FE_Solution(Mesh& mesh, int polynomialDegree)
 {
     mMesh = &mesh;
+    mPolynomialDegree = polynomialDegree;
+}
+
+FE_Solution::~FE_Solution()
+{
+    delete mMesh;
+}
+
+void FE_Solution::ComputeBasisFunctionValues(int dofNumber, Vector& functionValues, Vector& localQuadraturePoints)
+{
+    assert(functionValues.GetSize() == localQuadraturePoints.GetSize());
+
+
 }
 
 void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Matrix& x)

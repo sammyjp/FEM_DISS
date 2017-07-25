@@ -9,10 +9,16 @@ class FE_Solution
 private:
 
     Mesh* mMesh;
+    int mPolynomialDegree;
 
 public:
 
-    FE_Solution(Mesh& mesh);
+    FE_Solution(Mesh& mesh, int polynomialDegree);
+
+    ~FE_Solution();
+
+    void ComputeBasisFunctionValues(int dofNumber, Vector& functionValues);
+    void ComputeBasisFunctionGrad(int dofNumber, Matrix& gradValues);
 
     void ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Matrix& x);
 
