@@ -7,38 +7,24 @@
 
 int main(int argc, char* argv[])
 {
-    /*
-        for element 1:numElements
-            get quadrature;
-
-            for idofIndex 1:dofNumbersPerElement.GetLength
-                for jdofIndex 1:dofNumbersPerElement.GetLength
-                    calculate basis and/or gradbasis values;
-                    localMatrix(i,j) = performQuadrature on element with values;
-                end
-                calculate values;
-                rhs(i) = performQuadrature on element with values;
-            end
-
-            add to global matrix;
-            reset;
-        end
-
-        solve system;
-    */
-
     int numElements = 8;
 
-    Matrix* Grid = new Matrix (1,9);
+    Matrix* Grid = new Matrix (1,numElements+1);
+//    (*Grid)(1,1) = 0;
+//    (*Grid)(1,2) = 0.25;
+//    (*Grid)(1,3) = 0.5;
+//    (*Grid)(1,4) = 0.75;
+//    (*Grid)(1,5) = 1;
+
     (*Grid)(1,1) = 0;
     (*Grid)(1,2) = 0.125;
     (*Grid)(1,3) = 0.25;
     (*Grid)(1,4) = 0.375;
     (*Grid)(1,5) = 0.5;
-    (*Grid)(1,5) = 0.625;
-    (*Grid)(1,5) = 0.75;
-    (*Grid)(1,5) = 0.875;
-    (*Grid)(1,5) = 1;
+    (*Grid)(1,6) = 0.625;
+    (*Grid)(1,7) = 0.75;
+    (*Grid)(1,8) = 0.875;
+    (*Grid)(1,9) = 1;
 
     Vector* Connectivity1 = new Vector (2);
     (*Connectivity1)(1) = 1;
@@ -79,29 +65,72 @@ int main(int argc, char* argv[])
 
     FE_Solution* FE = new FE_Solution(*myMesh, 1);
 
-    int n_q = 4;
-    Vector* quadratureWeights = new Vector (n_q);
-    Matrix* localQuadraturePoints = new Matrix (1,n_q);
-    Matrix* globalQuadraturePoints = new Matrix (1,n_q);
-    double I;
+    Matrix* A = new Matrix (FE->GetNumberOfDofs(), FE->GetNumberOfDofs());
+    Vector* F = new Vector (FE->GetNumberOfDofs());
 
-    myMesh->GetElement(1)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
+    int n_q = 5;
 
-    for (int i=1; i<=n_q; i++)
+    int numElementDofs;
+
+    for (int k=1; k<=myMesh->GetNumElements(); k++)
     {
-        Vector* basisValues = new Vector(FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
-        Matrix* basisGrad = new Matrix(1,FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
+        Vector* quadratureWeights = new Vector (n_q);
+        Matrix* localQuadraturePoints = new Matrix (1,n_q);
+        Matrix* globalQuadraturePoints = new Matrix (1,n_q);
 
-        FE->GetElementPolynomialSpace(1)->ComputeBasis((*localQuadraturePoints)(1,i), *basisValues);
-        FE->GetElementPolynomialSpace(1)->ComputeGradBasis((*localQuadraturePoints)(1,i), *basisGrad);
+        numElementDofs = FE->GetElementPolynomialSpace(k)->GetNumElementDofs();
+        Matrix* A_loc = new Matrix (numElementDofs, numElementDofs);
+        Vector* f_loc = new Vector (numElementDofs);
 
-        std::cout << *basisValues;
-        std::cout << *basisGrad << std::endl;
+        myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
 
-        delete basisValues;
-        delete basisGrad;
+        for (int q=1; q<=n_q; q++)
+        {
+            Vector* basisValues = new Vector(FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
+            Matrix* basisGrad = new Matrix(myMesh->GetDimension(),FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
+
+            FE->GetElementPolynomialSpace(k)->ComputeBasis((*localQuadraturePoints)(1,q), *basisValues);
+            FE->GetElementPolynomialSpace(k)->ComputeGradBasis((*localQuadraturePoints)(1,q), *basisGrad);
+
+            for (int i=1; i<=A_loc->GetNumberOfRows(); i++)
+            {
+                for (int j=1; j<=A_loc->GetNumberOfColumns(); j++)
+                {
+                    (*A_loc)(i,j) += (*basisGrad)(1,i)*(*basisGrad)(1,j)*(*quadratureWeights)(q);
+                }
+            }
+            for (int i=1; i<=f_loc->GetSize(); i++)
+            {
+                std::cout << (*basisValues)(i) << std::endl;
+                (*f_loc)(i) += (*basisValues)(i)*(*quadratureWeights)(q);
+            }
+
+            delete basisValues;
+            delete basisGrad;
+        }
+
+        delete quadratureWeights;
+        delete localQuadraturePoints;
+        delete globalQuadraturePoints;
+
+        for (int i=1; i<=A_loc->GetNumberOfRows(); i++)
+        {
+            for (int j=1; j<=A_loc->GetNumberOfColumns(); j++)
+            {
+                (*A)((FE->GetElementDofs(k))(i), (FE->GetElementDofs(k))(j)) += (*A_loc)(i,j);
+            }
+        }
+        for (int i=1; i<=f_loc->GetSize(); i++)
+        {
+            (*F)((FE->GetElementDofs(k))(i)) += (*f_loc)(i);
+        }
+
+        delete A_loc;
+        delete f_loc;
     }
 
+    std::cout << *A;
+    std::cout << *F;
 
     return 0;
 }

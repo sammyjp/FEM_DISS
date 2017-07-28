@@ -4,6 +4,25 @@
 
 #include "SparseMatrix.hpp"
 
+SparseMatrix::SparseMatrix(FE_Solution& FE, int numElements)
+{
+    mNumRows = FE.GetNumberOfDofs();
+    mNumCols = FE.GetNumberOfDofs();
+    mNumNonZeros = 0;
+
+    for (int k=1; k<=numElements; k++)
+    {
+        FE.GetElementDofs(k);
+
+        for (int i=1; i<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); i++)
+        {
+            for (int j=1; j<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); j++)
+            {
+            }
+        }
+    }
+}
+
 SparseMatrix::SparseMatrix(Matrix& otherMatrix)
 {
     mNumRows = otherMatrix.GetNumberOfRows();

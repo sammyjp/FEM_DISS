@@ -1,6 +1,7 @@
 #ifndef SPARSEMATRIXHEADERDEF
 #define SPARSEMATRIXHEADERDEF
 
+#include "FE_Solution.hpp"
 #include "Matrix.hpp"
 #include "Vector.hpp"
 
@@ -16,6 +17,8 @@ private:
     int mNumCols;
 
 public:
+
+    SparseMatrix(FE_Solution& FE);
 
     SparseMatrix(Matrix& otherMatrix);
 

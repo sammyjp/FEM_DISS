@@ -10,8 +10,10 @@ class FE_Solution
 {
 private:
 
-    Mesh* mMesh;
+    Mesh* mMeshReference;
     int mPolynomialDegree;
+    int mNumDofs;
+    Vector* solutionVector;
 
     Vector* dofStart;
 
@@ -27,7 +29,8 @@ public:
 
     PolynomialSpace* GetElementPolynomialSpace(int elementNumber) const;
 
-
+    Vector GetElementDofs(int elementNumber);
+    int GetNumberOfDofs();
 };
 
 #endif
