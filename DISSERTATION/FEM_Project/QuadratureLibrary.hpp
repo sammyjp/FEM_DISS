@@ -22,7 +22,7 @@ public:
     // Default Constructor
     QuadratureLibrary();
 
-    void Quadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints);
+    void GetQuadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints);
 
     double GaussQuadrature(int elementType, Vector& gaussPoints, Vector& functionPoints, double mappingJacobianDeterminant);
 };

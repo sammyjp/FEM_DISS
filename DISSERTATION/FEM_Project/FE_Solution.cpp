@@ -11,147 +11,42 @@ FE_Solution::FE_Solution(Mesh& mesh, int polynomialDegree)
 {
     mMesh = &mesh;
     mPolynomialDegree = polynomialDegree;
+
+    InitialiseElementDofs();
 }
 
 FE_Solution::~FE_Solution()
 {
     delete mMesh;
+    delete dofStart;
+
+    for (int i=0; i<mMesh->GetNumElements(); i++)
+    {
+        delete mElementPolySpaceArray[i];
+    }
+    delete[] mElementPolySpaceArray;
 }
 
-void FE_Solution::ComputeBasisFunctionValues(int dofNumber, Vector& functionValues, Vector& localQuadraturePoints)
+void FE_Solution::InitialiseElementDofs()
 {
-    assert(functionValues.GetSize() == localQuadraturePoints.GetSize());
+    mElementPolySpaceArray = new PolynomialSpace* [mMesh->GetNumElements()];
 
+    for (int i=0; i<mMesh->GetNumElements(); i++)
+    {
+        mElementPolySpaceArray[i] = new PolynomialSpace(mPolynomialDegree, mMesh->GetElement(i+1)->GetElementType());
+    }
 
+    dofStart = new Vector(mMesh->GetNumElements() + 1);
+    (*dofStart)[0] = mMesh->GetNumNodes() + 1;
+    for(int i=1; i<dofStart->GetSize(); i++)
+    {
+        (*dofStart)[i] = (*dofStart)[i-1] + (mPolynomialDegree - 1);
+    }
 }
 
-void FE_Solution::ComputeLinearBasisFunctionValues(int i, Vector& functionValues, Matrix& x)
+PolynomialSpace* FE_Solution::GetElementPolynomialSpace(int elementNumber) const
 {
-    assert(functionValues.GetSize() == x.GetNumberOfColumns());
-    i--;
-    assert(i>=0&&i<=mMesh->GetNumElements());
-
-    int N = mMesh->GetNumElements();
-
-    Vector* xGrid = new Vector(mMesh->GetAllGridPoints().GetRowAsVector(1));
-
-    if (i==0)
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i+1]))
-            {
-                functionValues[j] = 1.0 - x(1,j+1)/((*xGrid)[i+1]-(*xGrid)[i]) + i;
-            }
-            else
-            {
-                functionValues[j] = 0;
-            }
-        }
-    }
-    else if (i==N)
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i-1] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i]))
-            {
-                functionValues[j] = 1.0 + x(1,j+1)/((*xGrid)[i]-(*xGrid)[i-1]) - i;
-            }
-            else
-            {
-                functionValues[j] = 0;
-            }
-        }
-    }
-    else
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i-1] <= x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i]))
-            {
-                functionValues[j] = 1.0 + x(1,j+1)/((*xGrid)[i]-(*xGrid)[i-1]) - i;
-            }
-            else if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) <= (*xGrid)[i+1]))
-            {
-                functionValues[j] = 1.0 - x(1,j+1)/((*xGrid)[i+1]-(*xGrid)[i]) + i;
-            }
-            else
-            {
-                functionValues[j] = 0;
-            }
-        }
-    }
-
-    delete xGrid;
-}
-
-void FE_Solution::ComputeLinearBasisFunctionDerivativeValues(int i, Vector& derivativeValues, Matrix& x)
-{
-    assert(derivativeValues.GetSize() == x.GetNumberOfColumns());
-    i--;
-    assert(i>=0&&i<=mMesh->GetNumElements());
-
-    int N = mMesh->GetNumElements();
-
-    Vector* xGrid = new Vector(mMesh->GetAllGridPoints().GetRowAsVector(1));
-
-    if (i==0)
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i+1]))
-            {
-                derivativeValues[j] = -1.0/((*xGrid)[i+1]-(*xGrid)[i]);
-            }
-            else if ((x(1,j+1) == (*xGrid)[i]) || (x(1,j+1) == (*xGrid)[i+1]))
-            {
-                derivativeValues[j] = NAN;
-            }
-            else
-            {
-                derivativeValues[j] = 0;
-            }
-        }
-    }
-    else if (i==N)
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i-1] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i]))
-            {
-                derivativeValues[j] = 1.0/((*xGrid)[i]-(*xGrid)[i-1]);
-            }
-            else if ((x(1,j+1) == (*xGrid)[i-1]) || (x(1,j+1) == (*xGrid)[i]))
-            {
-                derivativeValues[j] = NAN;
-            }
-            else
-            {
-                derivativeValues[j] = 0;
-            }
-        }
-    }
-    else
-    {
-        for (int j=0; j<x.GetNumberOfColumns(); j++)
-        {
-            if (((*xGrid)[i-1] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i]))
-            {
-                derivativeValues[j] = 1.0/((*xGrid)[i]-(*xGrid)[i-1]);
-            }
-            else if (((*xGrid)[i] < x(1,j+1)) && (x(1,j+1) < (*xGrid)[i+1]))
-            {
-                derivativeValues[j] = -1.0/((*xGrid)[i+1]-(*xGrid)[i]);
-            }
-            else if ((x(1,j+1) == (*xGrid)[i-1]) || (x(1,j+1) == (*xGrid)[i]) || (x(1,j+1) == (*xGrid)[i+1]))
-            {
-                derivativeValues[j] = NAN;
-            }
-            else
-            {
-                derivativeValues[j] = 0;
-            }
-        }
-    }
+    assert(elementNumber >= 1 && elementNumber <= mMesh->GetNumElements());
+    return mElementPolySpaceArray[elementNumber - 1];
 }
 

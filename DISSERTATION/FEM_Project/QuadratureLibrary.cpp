@@ -145,7 +145,7 @@ void QuadratureLibrary::MapReferenceQuadrilateralToTriangle(Matrix& quadrilatera
 }
 
 
-void QuadratureLibrary::Quadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints)
+void QuadratureLibrary::GetQuadrature(const int elementType, const int n_q, Vector& weights, Matrix& gaussPoints)
 {
     int n;
     assert(gaussPoints.GetNumberOfColumns() == n_q);

@@ -42,6 +42,8 @@
 		<Unit filename="Matrix.hpp" />
 		<Unit filename="Mesh.cpp" />
 		<Unit filename="Mesh.hpp" />
+		<Unit filename="PolynomialSpace.cpp" />
+		<Unit filename="PolynomialSpace.hpp" />
 		<Unit filename="QuadratureLibrary.cpp" />
 		<Unit filename="QuadratureLibrary.hpp" />
 		<Unit filename="Quadrilateral.cpp" />

@@ -3,6 +3,5 @@
 
 #include "FE_Solution.hpp"
 #include "Mesh.hpp"
-#include "QuadratureLibrary.hpp"
 
 #endif

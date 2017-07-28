@@ -7,11 +7,6 @@
 
 int main(int argc, char* argv[])
 {
-
-    //TODO create polynomial (deal 2 fe) class
-    //TODO in polynomial class have the basis shape functions with methods to evaluate on functions
-    //TODO add DOFs into FE_Solution class
-
     /*
         for element 1:numElements
             get quadrature;
@@ -82,67 +77,30 @@ int main(int argc, char* argv[])
     myMesh->InitialiseElement(8, *Connectivity8, 0);
 
 
-    FE_Solution* FE = new FE_Solution(*myMesh);
+    FE_Solution* FE = new FE_Solution(*myMesh, 1);
 
-    int n_q = 10;
+    int n_q = 4;
     Vector* quadratureWeights = new Vector (n_q);
     Matrix* localQuadraturePoints = new Matrix (1,n_q);
     Matrix* globalQuadraturePoints = new Matrix (1,n_q);
     double I;
-    double F;
 
-    Vector* functionTemp = new Vector(n_q);
-    Vector* functionPoints = new Vector (n_q);
+    myMesh->GetElement(1)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
 
-    Matrix* globalMatrix = new Matrix(9,9);
-    Vector* globalF = new Vector(9);
-
-    for (int i=1; i<=numElements; i++)
+    for (int i=1; i<=n_q; i++)
     {
-        Matrix* elementStiffness = new Matrix(2,2);
-        Vector* elementF = new Vector(2);
+        Vector* basisValues = new Vector(FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
+        Matrix* basisGrad = new Matrix(1,FE->GetElementPolynomialSpace(1)->GetNumElementDofs());
 
-        myMesh->GetElement(i)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
-        for (int k=1; k<=myMesh->GetElement(i)->GetElementConnectivityArray().GetSize(); k++)
-        {
-            for (int l=1; l<=myMesh->GetElement(i)->GetElementConnectivityArray().GetSize(); l++)
-            {
-                FE->ComputeLinearBasisFunctionDerivativeValues((myMesh->GetElement(i)->GetElementConnectivityArray())(k), *functionTemp, *globalQuadraturePoints);
-                FE->ComputeLinearBasisFunctionDerivativeValues((myMesh->GetElement(i)->GetElementConnectivityArray())(l), *functionPoints, *globalQuadraturePoints);
-                for (int j=0; j<functionPoints->GetSize();j++)
-                {
-                    (*functionPoints)[j] = (*functionPoints)[j]*(*functionTemp)[j];
-                }
-                I = myMesh->GetElement(i)->PerformElementQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *functionPoints);
-                (*elementStiffness)(k,l) = I;
-            }
+        FE->GetElementPolynomialSpace(1)->ComputeBasis((*localQuadraturePoints)(1,i), *basisValues);
+        FE->GetElementPolynomialSpace(1)->ComputeGradBasis((*localQuadraturePoints)(1,i), *basisGrad);
 
-            FE->ComputeLinearBasisFunctionValues((myMesh->GetElement(i)->GetElementConnectivityArray())(k), *functionTemp, *globalQuadraturePoints);
-            for (int j=0; j<functionTemp->GetSize();j++)
-            {
-                (*functionTemp)[j] = (*functionTemp)[j]*(*globalQuadraturePoints)(1,j+1);
-            }
-            F = myMesh->GetElement(i)->PerformElementQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *functionTemp);
-            (*elementF)(k) = F;
-        }
+        std::cout << *basisValues;
+        std::cout << *basisGrad << std::endl;
 
-        for (int g=1; g<=elementStiffness->GetNumberOfRows(); g++)
-        {
-            for (int h=1; h<=elementStiffness->GetNumberOfRows(); h++)
-            {
-                (*globalMatrix)((myMesh->GetElement(i)->GetElementConnectivityArray())(g),(myMesh->GetElement(i)->GetElementConnectivityArray())(h)) = (*elementStiffness)(g,h);
-            }
-            (*globalF)((myMesh->GetElement(i)->GetElementConnectivityArray())(g)) = (*elementF)(g);
-        }
-
-
-        delete elementStiffness;
-        delete elementF;
+        delete basisValues;
+        delete basisGrad;
     }
-    std::cout << *globalMatrix;
-
-    std::cout << *globalF;
-
 
 
     return 0;

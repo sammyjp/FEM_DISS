@@ -21,7 +21,7 @@ Vector Element::GetElementConnectivityArray() const
 
 void Element::GetQuadrature(const int n_q, Vector& quadratureWeights, Matrix& localQuadraturePoints, Matrix& globalQuadraturePoints)
 {
-    QuadratureLibrary().Quadrature(GetElementType(), n_q, quadratureWeights, localQuadraturePoints);
+    QuadratureLibrary().GetQuadrature(GetElementType(), n_q, quadratureWeights, localQuadraturePoints);
     MapLocalToGlobal(localQuadraturePoints, globalQuadraturePoints);
 }
 
