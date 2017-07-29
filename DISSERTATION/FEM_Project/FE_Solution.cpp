@@ -73,3 +73,8 @@ int FE_Solution::GetNumberOfDofs()
 {
     return mNumDofs;
 }
+
+Vector FE_Solution::GetSolutionVector()
+{
+    return *solutionVector;
+}

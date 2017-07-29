@@ -8,60 +8,57 @@ SparseMatrix::SparseMatrix(FE_Solution& FE, int numElements)
 {
     mNumRows = FE.GetNumberOfDofs();
     mNumCols = FE.GetNumberOfDofs();
+
+    mRow_ptr = new Vector (mNumRows+1);
+    (*mRow_ptr) = 1;
+
+    Vector* NNZ = new Vector (FE.GetNumberOfDofs());
+
     mNumNonZeros = 0;
 
     for (int k=1; k<=numElements; k++)
     {
-        FE.GetElementDofs(k);
-
         for (int i=1; i<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); i++)
         {
             for (int j=1; j<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); j++)
             {
+                (*NNZ)((FE.GetElementDofs(k))(i)) ++;
             }
         }
     }
-}
 
-SparseMatrix::SparseMatrix(Matrix& otherMatrix)
-{
-    mNumRows = otherMatrix.GetNumberOfRows();
-    mNumCols = otherMatrix.GetNumberOfColumns();
-
-    for (int i=1; i<=mNumRows; i++)
+    for (int i=0; i<NNZ->GetSize(); i++)
     {
-        for (int j=1; j<=mNumCols; j++)
-        {
-            if (otherMatrix(i,j) != 0)
-            {
-                mNumNonZeros++;
-            }
-        }
+        mNumNonZeros += (*NNZ)[i];
     }
-    assert(mNumNonZeros != 0);
+
+    for (int i=1; i<mRow_ptr->GetSize(); i++)
+    {
+        (*mRow_ptr)[i] = (*mRow_ptr)[i-1] + (*NNZ)[i-1];
+    }
+
+    delete NNZ;
 
     mData = new Vector (mNumNonZeros);
-    mRow_ptr = new Vector (mNumRows+1);
     mCol_index = new Vector (mNumNonZeros);
 
-    int dataIndex = 0;
-
-    for (int i=1; i<=mNumRows; i++)
+    for (int k=1; k<=numElements; k++)
     {
-        (*mRow_ptr)[i-1] = dataIndex;
-
-        for (int j=1; j<=mNumCols; j++)
+        for (int i=1; i<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); i++)
         {
-            if (otherMatrix(i,j) != 0)
+            for (int j=1; j<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); j++)
             {
-                (*mData)[dataIndex] = otherMatrix(i,j);
-                (*mCol_index)[dataIndex] = j-1;
-                dataIndex++;
+                for (int l=0; l<(*mRow_ptr)((FE.GetElementDofs(k))(i)+1) - (*mRow_ptr)((FE.GetElementDofs(k))(i)); l++)
+                {
+                    if ((*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) == 0)
+                    {
+                        (*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) = (FE.GetElementDofs(k))(j);
+                        break;
+                    }
+                }
             }
         }
     }
-
-    (*mRow_ptr)[otherMatrix.GetNumberOfRows()] = mNumNonZeros;
 }
 
 SparseMatrix::SparseMatrix(SparseMatrix& otherSparseMatrix)
@@ -99,11 +96,11 @@ double SparseMatrix::Read(int i, int j) const
     assert(j > 0);
     assert(j < mNumCols+1);
 
-    for (int k=(*mRow_ptr)[i-1]; k<(*mRow_ptr)[i]; k++)
+    for (int k=(*mRow_ptr)(i); k<(*mRow_ptr)(i+1); k++)
     {
-        if((*mCol_index)[k]==j-1)
+        if((*mCol_index)(k)==j)
         {
-            return (*mData)[k];
+            return (*mData)(k);
         }
     }
     return 0.0;
@@ -111,17 +108,20 @@ double SparseMatrix::Read(int i, int j) const
 
 double SparseMatrix::ReadDataArray(int i) const
 {
-    return (*mData)[i-1];
+    assert(i > 0 && i <= mData->GetSize());
+    return (*mData)(i);
 }
 
 int SparseMatrix::ReadRowPointerArray(int i) const
 {
-    return (*mRow_ptr)[i-1];
+    assert(i > 0 && i <= mRow_ptr->GetSize());
+    return (*mRow_ptr)(i);
 }
 
 int SparseMatrix::ReadColumnIndexArray(int i) const
 {
-    return (*mCol_index)[i-1];
+    assert(i > 0 && i <= mCol_index->GetSize());
+    return (*mCol_index)(i);
 }
 
 Vector SparseMatrix::GetDataArray() const
@@ -147,6 +147,23 @@ int SparseMatrix::GetNumberOfRows() const
 int SparseMatrix::GetNumberOfColumns() const
 {
     return mNumCols;
+}
+
+void SparseMatrix::AddValue(double value, int i, int j)
+{
+    assert(i > 0);
+    assert(i < mNumRows+1);
+    assert(j > 0);
+    assert(j < mNumCols+1);
+
+    for (int k=(*mRow_ptr)(i); k<(*mRow_ptr)(i+1); k++)
+    {
+        if((*mCol_index)(k)==j)
+        {
+            (*mData)(k) += value;
+            return;
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream& output, const SparseMatrix& m)
@@ -175,11 +192,13 @@ Vector operator*(const SparseMatrix& m, const Vector& v)
     int new_vector_length = m.GetNumberOfRows();
     Vector new_vector(new_vector_length);
 
-    for (int i=0; i<new_vector_length; i++)
+    for (int i=1; i<=new_vector_length; i++)
     {
-        for (int j=m.ReadRowPointerArray(i+1); j<m.ReadRowPointerArray(i+2); j++)
+        for (int j=m.ReadRowPointerArray(i); j<m.ReadRowPointerArray(i+1); j++)
         {
-            new_vector[i] += m.ReadDataArray(j+1)*v.Read(m.ReadColumnIndexArray(j+1));
+            std::cout << "i = " << i << ". j = " << j << ".\n";
+            std::cout << "Column index = " << m.ReadColumnIndexArray(j) << ".\n";
+            new_vector(i) += m.ReadDataArray(j)*v.Read(m.ReadColumnIndexArray(j));
         }
     }
 

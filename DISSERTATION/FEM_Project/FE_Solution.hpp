@@ -31,6 +31,8 @@ public:
 
     Vector GetElementDofs(int elementNumber);
     int GetNumberOfDofs();
+
+    Vector GetSolutionVector();
 };
 
 #endif
