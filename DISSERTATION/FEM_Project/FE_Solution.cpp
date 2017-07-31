@@ -14,12 +14,14 @@ FE_Solution::FE_Solution(Mesh& mesh, int polynomialDegree)
 
     InitialiseElementDofs();
     mNumDofs = (*dofStart)(dofStart->GetSize()) - 1;
+
+    mSolutionVector = new Vector (mNumDofs);
 }
 
 FE_Solution::~FE_Solution()
 {
     delete mMeshReference;
-    delete solutionVector;
+    delete mSolutionVector;
     delete dofStart;
 
     for (int i=0; i<mMeshReference->GetNumElements(); i++)
@@ -74,7 +76,48 @@ int FE_Solution::GetNumberOfDofs()
     return mNumDofs;
 }
 
-Vector FE_Solution::GetSolutionVector()
+int FE_Solution::GetNumElementDofs(int elementNumber)
 {
-    return *solutionVector;
+    return GetElementPolynomialSpace(elementNumber)->GetNumElementDofs();
+}
+
+Vector& FE_Solution::GetSolutionVector()
+{
+    return *mSolutionVector;
+}
+
+void FE_Solution::ComputeBasis(int elementNumber, double localGridPoint, Vector& basisValues)
+{
+    GetElementPolynomialSpace(elementNumber)->ComputeBasis(localGridPoint, basisValues);
+}
+
+void FE_Solution::ComputeBasis(int elementNumber, Vector& localGridPoint, Vector& basisValues)
+{
+    GetElementPolynomialSpace(elementNumber)->ComputeBasis(localGridPoint, basisValues);
+}
+
+void FE_Solution::ComputeGradBasis(int elementNumber, double localGridPoint, Matrix& gradBasisValues)
+{
+    GetElementPolynomialSpace(elementNumber)->ComputeGradBasis(localGridPoint, gradBasisValues);
+
+    Matrix* jacobian = new Matrix (mMeshReference->GetDimension(), mMeshReference->GetDimension());
+
+    mMeshReference->GetElement(elementNumber)->ComputeMappingJacobian(localGridPoint, *jacobian);
+
+    gradBasisValues = gradBasisValues*(1.0/(jacobian->CalculateDeterminant()));
+
+    delete jacobian;
+}
+
+void FE_Solution::ComputeGradBasis(int elementNumber, Vector& localGridPoint, Matrix& gradBasisValues)
+{
+    GetElementPolynomialSpace(elementNumber)->ComputeGradBasis(localGridPoint, gradBasisValues);
+
+    Matrix* jacobian = new Matrix (mMeshReference->GetDimension(), mMeshReference->GetDimension());
+
+    mMeshReference->GetElement(elementNumber)->ComputeMappingJacobian(localGridPoint, *jacobian);
+
+    gradBasisValues = gradBasisValues*(1.0/(jacobian->CalculateDeterminant()));
+
+    delete jacobian;
 }

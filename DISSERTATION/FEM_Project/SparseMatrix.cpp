@@ -42,18 +42,31 @@ SparseMatrix::SparseMatrix(FE_Solution& FE, int numElements)
     mData = new Vector (mNumNonZeros);
     mCol_index = new Vector (mNumNonZeros);
 
+    bool ColIndexExists;
+
     for (int k=1; k<=numElements; k++)
     {
         for (int i=1; i<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); i++)
         {
             for (int j=1; j<=FE.GetElementPolynomialSpace(k)->GetNumElementDofs(); j++)
             {
+                ColIndexExists = false;
                 for (int l=0; l<(*mRow_ptr)((FE.GetElementDofs(k))(i)+1) - (*mRow_ptr)((FE.GetElementDofs(k))(i)); l++)
                 {
-                    if ((*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) == 0)
+                    if ((*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) == (FE.GetElementDofs(k))(j))
                     {
-                        (*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) = (FE.GetElementDofs(k))(j);
-                        break;
+                        ColIndexExists = true;
+                    }
+                }
+                if (!ColIndexExists)
+                {
+                    for (int l=0; l<(*mRow_ptr)((FE.GetElementDofs(k))(i)+1) - (*mRow_ptr)((FE.GetElementDofs(k))(i)); l++)
+                    {
+                        if ((*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) == 0)
+                        {
+                            (*mCol_index)((*mRow_ptr)((FE.GetElementDofs(k))(i)) + l) = (FE.GetElementDofs(k))(j);
+                            break;
+                        }
                     }
                 }
             }
@@ -160,7 +173,7 @@ void SparseMatrix::AddValue(double value, int i, int j)
     {
         if((*mCol_index)(k)==j)
         {
-            (*mData)(k) += value;
+            (*mData)(k) = value;
             return;
         }
     }
@@ -196,9 +209,10 @@ Vector operator*(const SparseMatrix& m, const Vector& v)
     {
         for (int j=m.ReadRowPointerArray(i); j<m.ReadRowPointerArray(i+1); j++)
         {
-            std::cout << "i = " << i << ". j = " << j << ".\n";
-            std::cout << "Column index = " << m.ReadColumnIndexArray(j) << ".\n";
-            new_vector(i) += m.ReadDataArray(j)*v.Read(m.ReadColumnIndexArray(j));
+            if (m.ReadColumnIndexArray(j) != 0)
+            {
+                new_vector(i) += m.ReadDataArray(j)*v.Read(m.ReadColumnIndexArray(j) - 1);
+            }
         }
     }
 

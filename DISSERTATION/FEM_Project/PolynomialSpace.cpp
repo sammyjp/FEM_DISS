@@ -7,7 +7,14 @@ PolynomialSpace::PolynomialSpace(int polynomialDegree, int elementType)
 {
     mPolynomialDegree = polynomialDegree;
     mElementType = elementType;
-    mNumElementDofs = polynomialDegree + 1;
+    if (mElementType == 0)
+    {
+        mNumElementDofs = polynomialDegree + 1;
+    }
+    else if (mElementType == 2)
+    {
+        mNumElementDofs = 4;
+    }
 }
 
 double PolynomialSpace::EvaluateNthLegendrePolynomial(int n, double pointToEvaluate)
@@ -172,20 +179,56 @@ int PolynomialSpace::GetNumElementDofs()
 void PolynomialSpace::ComputeBasis(double localGridPoint, Vector& basisValues)
 {
     assert(basisValues.GetSize() == mNumElementDofs);
+    assert(mElementType == 0);
+
+    for (int i=1; i<=mNumElementDofs; i++)
+    {
+        basisValues(i) = EvaluateNthLobattoPolynomial(i-1, localGridPoint);
+    }
+}
+
+void PolynomialSpace::ComputeBasis(Vector& localGridPoint, Vector& basisValues)
+{
+    assert(basisValues.GetSize() == mNumElementDofs);
 
     switch(mElementType)
     {
     case 0:
         {
-            for (int i=0; i<mNumElementDofs; i++)
+            for (int i=1; i<=mNumElementDofs; i++)
             {
-                basisValues[i] = EvaluateNthLobattoPolynomial(i, localGridPoint);
+                basisValues(i) = EvaluateNthLobattoPolynomial(i-1, localGridPoint(1));
             }
+        } break;
+    case 2:
+        {
+            /* temporary until functions programmed in */ assert (mPolynomialDegree == 1);
+
+            basisValues(1) = EvaluateNthLobattoPolynomial(0, localGridPoint(1))*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
+            basisValues(2) = EvaluateNthLobattoPolynomial(1, localGridPoint(1))*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
+            basisValues(3) = EvaluateNthLobattoPolynomial(1, localGridPoint(1))*EvaluateNthLobattoPolynomial(1, localGridPoint(2));
+            basisValues(4) = EvaluateNthLobattoPolynomial(0, localGridPoint(1))*EvaluateNthLobattoPolynomial(1, localGridPoint(2));
+
         } break;
     }
 }
 
 void PolynomialSpace::ComputeGradBasis(double localGridPoint, Matrix& gradBasisValues)
+{
+    assert(gradBasisValues.GetNumberOfColumns() == mNumElementDofs);
+    assert(mElementType == 0);
+
+    assert(gradBasisValues.GetNumberOfRows() == 1);
+    gradBasisValues(1,1) = -0.5;
+    gradBasisValues(1,2) = 0.5;
+
+    for (int i=3; i<=mNumElementDofs; i++)
+    {
+        gradBasisValues(1,i) =  sqrt((2.0*(i-1) - 1.0)/2.0)*EvaluateNthLegendrePolynomial(i-2, localGridPoint);
+    }
+}
+
+void PolynomialSpace::ComputeGradBasis(Vector& localGridPoint, Matrix& gradBasisValues)
 {
     assert(gradBasisValues.GetNumberOfColumns() == mNumElementDofs);
 
@@ -200,8 +243,21 @@ void PolynomialSpace::ComputeGradBasis(double localGridPoint, Matrix& gradBasisV
 
             for (int i=3; i<=mNumElementDofs; i++)
             {
-                gradBasisValues(1,i) =  sqrt((2.0*(i-1) - 1.0)/2.0)*EvaluateNthLegendrePolynomial(i-2, localGridPoint);
+                gradBasisValues(1,i) =  sqrt((2.0*(i-1) - 1.0)/2.0)*EvaluateNthLegendrePolynomial(i-2, localGridPoint(1));
             }
         } break;
+    case 2:
+        {
+            /* temporary until functions programmed in */ assert (mPolynomialDegree == 1);
+            gradBasisValues(1,1) = -0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
+            gradBasisValues(2,1) = -0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(1));
+            gradBasisValues(1,2) = 0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
+            gradBasisValues(2,2) = -0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(1));
+            gradBasisValues(1,3) = 0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(2));
+            gradBasisValues(2,3) = 0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(1));
+            gradBasisValues(1,4) = -0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(2));
+            gradBasisValues(2,4) = 0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(1));
+        }
     }
 }
+

@@ -19,6 +19,7 @@ public:
     void MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords);
     void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords);
 
+    void ComputeMappingJacobian(double pointToEval, Matrix& Jacobian);
     void ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian);
 
 };

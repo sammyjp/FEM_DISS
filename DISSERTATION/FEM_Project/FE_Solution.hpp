@@ -13,7 +13,7 @@ private:
     Mesh* mMeshReference;
     int mPolynomialDegree;
     int mNumDofs;
-    Vector* solutionVector;
+    Vector* mSolutionVector;
 
     Vector* dofStart;
 
@@ -31,8 +31,16 @@ public:
 
     Vector GetElementDofs(int elementNumber);
     int GetNumberOfDofs();
+    int GetNumElementDofs(int elementNumber);
 
-    Vector GetSolutionVector();
+    void SetSolutionVector();
+    Vector& GetSolutionVector();
+
+    void ComputeBasis(int elementNumber, double localGridPoint, Vector& basisValues);
+    void ComputeBasis(int elementNumber, Vector& localGridPoint, Vector& basisValues);
+
+    void ComputeGradBasis(int elementNumber, double localGridPoint, Matrix& gradBasisValues);
+    void ComputeGradBasis(int elementNumber, Vector& localGridPoint, Matrix& gradBasisValues);
 };
 
 #endif

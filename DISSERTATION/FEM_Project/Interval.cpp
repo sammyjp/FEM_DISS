@@ -53,6 +53,19 @@ void Interval::MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords)
     delete nodes;
 }
 
+void Interval::ComputeMappingJacobian(double pointToEval, Matrix& Jacobian)
+{
+    Matrix* nodes = new Matrix (GetElementCoordinates());
+    assert(Jacobian.GetNumberOfRows() == Jacobian.GetNumberOfColumns());
+    assert(Jacobian.GetNumberOfRows() == 1);
+    assert(nodes->GetNumberOfRows() == 1);
+    assert(nodes->GetNumberOfColumns() == 2);
+
+    Jacobian(1,1) = 0.5*((*nodes)(1,2) - (*nodes)(1,1));
+
+    delete nodes;
+}
+
 void Interval::ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian)
 {
     Matrix* nodes = new Matrix (GetElementCoordinates());

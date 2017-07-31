@@ -24,8 +24,10 @@ public:
     int GetNumElementDofs();
 
     void ComputeBasis(double localGridPoint, Vector& basisValues);
+    void ComputeBasis(Vector& localGridPoint, Vector& basisValues);
 
     void ComputeGradBasis(double localGridPoint, Matrix& gradBasisValues);
+    void ComputeGradBasis(Vector& localGridPoint, Matrix& gradBasisValues);
 
 
 };
