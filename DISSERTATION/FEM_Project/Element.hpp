@@ -26,6 +26,7 @@ public:
     virtual ~Element();
 
     virtual int GetElementType() const = 0;
+    virtual int GetNumElementNodes() const = 0;
     virtual Matrix GetElementCoordinates() const;
     virtual Vector GetElementConnectivityArray() const;
 

@@ -19,6 +19,11 @@ int Quadrilateral::GetElementType() const
     return ElementType::Quadrilateral;
 }
 
+int Quadrilateral::GetNumElementNodes() const
+{
+    return 4;
+}
+
 void Quadrilateral::MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords)
 {
     Matrix* nodes = new Matrix (GetElementCoordinates());

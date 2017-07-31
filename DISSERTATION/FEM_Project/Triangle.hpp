@@ -15,6 +15,7 @@ public:
     Triangle(const Triangle& otherTriangle);
 
     int GetElementType() const;
+    int GetNumElementNodes() const;
 
     void MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords);
     void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords);

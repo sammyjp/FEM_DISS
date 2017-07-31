@@ -11,69 +11,42 @@ void Example2D();
 
 int main(int argc, char* argv[])
 {
-    Example2D();
+    Example1D();
     return 0;
 }
 
 void Example1D()
 {
-    int numElements = 8;
+    int numElements = 4;
+    int polynomialDegree = 1;
 
     Matrix* Grid = new Matrix (1,numElements+1);
-//    (*Grid)(1,1) = 0;
-//    (*Grid)(1,2) = 0.25;
-//    (*Grid)(1,3) = 0.5;
-//    (*Grid)(1,4) = 0.75;
-//    (*Grid)(1,5) = 1;
 
-    (*Grid)(1,1) = 0;
-    (*Grid)(1,2) = 0.125;
-    (*Grid)(1,3) = 0.25;
-    (*Grid)(1,4) = 0.375;
-    (*Grid)(1,5) = 0.5;
-    (*Grid)(1,6) = 0.625;
-    (*Grid)(1,7) = 0.75;
-    (*Grid)(1,8) = 0.875;
-    (*Grid)(1,9) = 1;
+    for (int j=1; j<=Grid->GetNumberOfColumns(); j++)
+    {
+        (*Grid)(1,j) = (j-1)*(1.0/numElements);
+    }
 
-    Vector* Connectivity1 = new Vector (2);
-    (*Connectivity1)(1) = 1;
-    (*Connectivity1)(2) = 2;
-    Vector* Connectivity2 = new Vector (2);
-    (*Connectivity2)(1) = 2;
-    (*Connectivity2)(2) = 3;
-    Vector* Connectivity3 = new Vector (2);
-    (*Connectivity3)(1) = 3;
-    (*Connectivity3)(2) = 4;
-    Vector* Connectivity4 = new Vector (2);
-    (*Connectivity4)(1) = 4;
-    (*Connectivity4)(2) = 5;
-    Vector* Connectivity5 = new Vector (2);
-    (*Connectivity5)(1) = 5;
-    (*Connectivity5)(2) = 6;
-    Vector* Connectivity6 = new Vector (2);
-    (*Connectivity6)(1) = 6;
-    (*Connectivity6)(2) = 7;
-    Vector* Connectivity7 = new Vector (2);
-    (*Connectivity7)(1) = 7;
-    (*Connectivity7)(2) = 8;
-    Vector* Connectivity8 = new Vector (2);
-    (*Connectivity8)(1) = 8;
-    (*Connectivity8)(2) = 9;
+    Matrix* Connectivity = new Matrix (numElements, 2);
+
+    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+    {
+        for (int j=1; j<=Connectivity->GetNumberOfColumns(); j++)
+        {
+            (*Connectivity)(i,j) = i + (j-1);
+        }
+    }
 
     Mesh* myMesh = new Mesh(*Grid, numElements);
 
-    myMesh->InitialiseElement(1, *Connectivity1, 0);
-    myMesh->InitialiseElement(2, *Connectivity2, 0);
-    myMesh->InitialiseElement(3, *Connectivity3, 0);
-    myMesh->InitialiseElement(4, *Connectivity4, 0);
-    myMesh->InitialiseElement(5, *Connectivity5, 0);
-    myMesh->InitialiseElement(6, *Connectivity6, 0);
-    myMesh->InitialiseElement(7, *Connectivity7, 0);
-    myMesh->InitialiseElement(8, *Connectivity8, 0);
+    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+    {
+        Vector* Con_temp = new Vector (Connectivity->GetRowAsVector(i));
+        myMesh->InitialiseElement(i, *Con_temp, 0);
+        delete Con_temp;
+    }
 
-
-    FE_Solution* FE = new FE_Solution(*myMesh, 1);
+    FE_Solution* FE = new FE_Solution(*myMesh, polynomialDegree);
 
     SparseMatrix* A = new SparseMatrix(*FE, numElements);
     Vector* F = new Vector (FE->GetNumberOfDofs());
@@ -178,61 +151,56 @@ void Example1D()
 
 void Example2D()
 {
-    int numElements = 4;
+    int numElements = 16;
 
-    Matrix* Grid = new Matrix (2,9);
+    Matrix* Grid = new Matrix (2,25);
+    double value=0;
+    for (int j=1; j<=Grid->GetNumberOfColumns(); j++)
+    {
+        (*Grid)(1,j) = ((j-1)%((int)(sqrt(numElements))+1))*(1.0/sqrt(numElements));
+        if (((j-1)%((int)(sqrt(numElements))+1)) == 0 && j>1)
+        {
+            value += (1.0/sqrt(numElements));
+        }
+        (*Grid)(2,j) = value;
+    }
 
-    (*Grid)(1,1) = 0;
-    (*Grid)(2,1) = 0;
-    (*Grid)(1,2) = 0.5;
-    (*Grid)(2,2) = 0;
-    (*Grid)(1,3) = 1;
-    (*Grid)(2,3) = 0;
-    (*Grid)(1,4) = 0;
-    (*Grid)(2,4) = 0.5;
-    (*Grid)(1,5) = 0.5;
-    (*Grid)(2,5) = 0.5;
-    (*Grid)(1,6) = 1;
-    (*Grid)(2,6) = 0.5;
-    (*Grid)(1,7) = 0;
-    (*Grid)(2,7) = 1;
-    (*Grid)(1,8) = 0.5;
-    (*Grid)(2,8) = 1;
-    (*Grid)(1,9) = 1;
-    (*Grid)(2,9) = 1;
+    Matrix* Connectivity = new Matrix (numElements, 4);
 
-    Vector* Connectivity1 = new Vector (4);
-    (*Connectivity1)(1) = 1;
-    (*Connectivity1)(2) = 2;
-    (*Connectivity1)(3) = 5;
-    (*Connectivity1)(4) = 4;
-    Vector* Connectivity2 = new Vector (4);
-    (*Connectivity2)(1) = 2;
-    (*Connectivity2)(2) = 3;
-    (*Connectivity2)(3) = 6;
-    (*Connectivity2)(4) = 5;
-    Vector* Connectivity3 = new Vector (4);
-    (*Connectivity3)(1) = 4;
-    (*Connectivity3)(2) = 5;
-    (*Connectivity3)(3) = 8;
-    (*Connectivity3)(4) = 7;
-    Vector* Connectivity4 = new Vector (4);
-    (*Connectivity4)(1) = 5;
-    (*Connectivity4)(2) = 6;
-    (*Connectivity4)(3) = 9;
-    (*Connectivity4)(4) = 8;
+    int k=0;
+    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+    {
+        k++;
+        if ((i%((int)(sqrt(numElements))+1)) == 0)
+        {
+            k++;
+        }
+        for (int j=1; j<=Connectivity->GetNumberOfColumns(); j++)
+        {
+            if (j==1 || j==2)
+            {
+                (*Connectivity)(i,j) = k + (j-1);
+            }
+            if (j==3 || j==4)
+            {
+                (*Connectivity)(i,j) = k + (int)(sqrt(numElements)) + 4 - (j-1);
+            }
+        }
+    }
 
     Mesh* myMesh = new Mesh(*Grid, numElements);
 
-    myMesh->InitialiseElement(1, *Connectivity1, 2);
-    myMesh->InitialiseElement(2, *Connectivity2, 2);
-    myMesh->InitialiseElement(3, *Connectivity3, 2);
-    myMesh->InitialiseElement(4, *Connectivity4, 2);
-
+    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+    {
+        Vector* Con_temp = new Vector (Connectivity->GetRowAsVector(i));
+        myMesh->InitialiseElement(i, *Con_temp, 2);
+        delete Con_temp;
+    }
 
     FE_Solution* FE = new FE_Solution(*myMesh, 1);
 
     SparseMatrix* A = new SparseMatrix(*FE, numElements);
+
     Vector* F = new Vector (FE->GetNumberOfDofs());
 
     int n_q = 9;
@@ -309,7 +277,7 @@ void Example2D()
     {
         for (int j=1; j<=A->GetNumberOfColumns(); j++)
         {
-            if (i!=5 || j!=5)
+            if (i<=5 || j<=1 || i>=21 || j<=21 || (i%5)==1 || (j%5)==1 || (i%5)==0 || (j%5)==0)
             {
                 if (i==j)
                 {
@@ -324,7 +292,7 @@ void Example2D()
     }
     for (int i=1; i<=F->GetSize(); i++)
     {
-        if (i!=5)
+        if (i<=5 || i>=21 || (i%5)==1 || (i%5)==0)
         {
             (*F)(i) = 0;
         }

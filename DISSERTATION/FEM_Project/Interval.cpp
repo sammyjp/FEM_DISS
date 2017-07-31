@@ -19,6 +19,11 @@ int Interval::GetElementType() const
     return ElementType::Interval;
 }
 
+int Interval::GetNumElementNodes() const
+{
+    return 2;
+}
+
 void Interval::MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords)
 {
     Matrix* nodes = new Matrix (GetElementCoordinates());

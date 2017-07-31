@@ -19,6 +19,11 @@ int Triangle::GetElementType() const
     return ElementType::Triangle;
 }
 
+int Triangle::GetNumElementNodes() const
+{
+    return 3;
+}
+
 void Triangle::MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords)
 {
     Matrix* nodes = new Matrix (GetElementCoordinates());

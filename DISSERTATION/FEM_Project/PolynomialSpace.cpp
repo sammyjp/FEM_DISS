@@ -13,6 +13,7 @@ PolynomialSpace::PolynomialSpace(int polynomialDegree, int elementType)
     }
     else if (mElementType == 2)
     {
+        /* TEMPORARY */
         mNumElementDofs = 4;
     }
 }

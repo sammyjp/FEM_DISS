@@ -41,6 +41,7 @@ void FE_Solution::InitialiseElementDofs()
     }
 
     dofStart = new Vector(mMeshReference->GetNumElements() + 1);
+
     (*dofStart)[0] = mMeshReference->GetNumNodes() + 1;
     for(int i=1; i<dofStart->GetSize(); i++)
     {
