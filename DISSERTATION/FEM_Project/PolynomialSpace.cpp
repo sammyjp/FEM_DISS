@@ -18,6 +18,7 @@ PolynomialSpace::PolynomialSpace(int polynomialDegree, int elementType)
     }
 }
 
+
 double PolynomialSpace::EvaluateNthLegendrePolynomial(int n, double pointToEvaluate)
 {
     assert (n >= 0);

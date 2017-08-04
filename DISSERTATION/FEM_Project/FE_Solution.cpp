@@ -20,7 +20,6 @@ FE_Solution::FE_Solution(Mesh& mesh, int polynomialDegree)
 
 FE_Solution::~FE_Solution()
 {
-    delete mMeshReference;
     delete mSolutionVector;
     delete dofStart;
 
@@ -34,18 +33,26 @@ FE_Solution::~FE_Solution()
 void FE_Solution::InitialiseElementDofs()
 {
     mElementPolySpaceArray = new PolynomialSpace* [mMeshReference->GetNumElements()];
+    dofStart = new Vector(mMeshReference->GetNumElements() + 1);
+
+    (*dofStart)[0] = mMeshReference->GetNumNodes() + 1;
 
     for (int i=0; i<mMeshReference->GetNumElements(); i++)
     {
         mElementPolySpaceArray[i] = new PolynomialSpace(mPolynomialDegree, mMeshReference->GetElement(i+1)->GetElementType());
-    }
 
-    dofStart = new Vector(mMeshReference->GetNumElements() + 1);
+        if (mMeshReference->GetElement(i+1)->GetElementType() == 0)
+        {
+            (*dofStart)[i+1] = (*dofStart)[i] + (mPolynomialDegree - 1);
+        }
+        else if (mMeshReference->GetElement(i+1)->GetElementType() == 1)
+        {
 
-    (*dofStart)[0] = mMeshReference->GetNumNodes() + 1;
-    for(int i=1; i<dofStart->GetSize(); i++)
-    {
-        (*dofStart)[i] = (*dofStart)[i-1] + (mPolynomialDegree - 1);
+        }
+        else if (mMeshReference->GetElement(i+1)->GetElementType() == 2)
+        {
+            (*dofStart)[i+1] = (*dofStart)[i] + ((mPolynomialDegree-1)*4);
+        }
     }
 }
 
@@ -122,3 +129,23 @@ void FE_Solution::ComputeGradBasis(int elementNumber, Vector& localGridPoint, Ma
 
     delete jacobian;
 }
+
+double FE_Solution::ComputeUh(int elementNumber, double localGridPoint)
+{
+    double Uh = 0;
+
+    Vector* basisValues = new Vector (GetNumElementDofs(elementNumber));
+    ComputeBasis(elementNumber, localGridPoint, *basisValues);
+    Vector* elementDofs = new Vector (GetElementDofs(elementNumber));
+
+    for (int i=1; i<=GetNumElementDofs(elementNumber); i++)
+    {
+        Uh += ((*mSolutionVector)((*elementDofs)(i)))*((*basisValues)(i));
+    }
+
+    delete basisValues;
+    delete elementDofs;
+
+    return Uh;
+}
+
