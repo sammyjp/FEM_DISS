@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <sstream>
 #include <iomanip>
 #include <cassert>
 #include <cmath>
@@ -29,7 +31,7 @@ void Example1D()
 
     double a = 0;
     double b = 1;
-    int numElements = 15;
+    int numElements = 16;
     int polynomialDegree = 1;
 
     Matrix* Grid = new Matrix (1,numElements+1);
@@ -230,186 +232,189 @@ void ErrorAnalysis1D()
 
     double a = 0;
     double b = 1;
-    int numElements = 15;
 
-    std::cout << "h = " << (b-a)/numElements << std::endl;
-
-    Matrix* Grid = new Matrix (1,numElements+1);
-
-    for (int j=1; j<=Grid->GetNumberOfColumns(); j++)
+    for (int polynomialDegree=1; polynomialDegree<=4; polynomialDegree++)
     {
-        (*Grid)(1,j) = (j-1)*((b-a)/numElements) + a;
-    }
+        // Creates an output file
+        std::ofstream error_output;
+        error_output.setf(std::ios::scientific,std::ios::floatfield);
+        error_output.precision(6);
 
-    Matrix* Connectivity = new Matrix (numElements, 2);
+        std::stringstream fileName;
+        fileName << polynomialDegree;
 
-    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
-    {
-        for (int j=1; j<=Connectivity->GetNumberOfColumns(); j++)
+        // Open file (and perform a check)
+        error_output.open("1DError_p"+fileName.str()+".dat");
+        assert(error_output.is_open());
+
+        std::cout << std::setprecision(5) << std::scientific;
+        std::cout << std::setw(15) << "NumDofs^(1/d)" << std::setw(12) << "||u-uh||" << std::endl;
+
+        for (int numElements=1; numElements<=30; numElements++)
         {
-            (*Connectivity)(i,j) = i + (j-1);
-        }
-    }
+            Matrix* Grid = new Matrix (1,numElements+1);
 
-    Mesh* myMesh = new Mesh(*Grid, numElements);
-
-    delete Grid;
-
-    for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
-    {
-        Vector* Con_temp = new Vector (Connectivity->GetRowAsVector(i));
-        myMesh->InitialiseElement(i, *Con_temp, 0);
-        delete Con_temp;
-    }
-
-    delete Connectivity;
-
-    // Creates an output file
-    std::ofstream error_output;
-    error_output.setf(std::ios::scientific,std::ios::floatfield);
-    error_output.precision(6);
-
-    // Open file (and perform a check)
-    error_output.open("1DError.dat");
-    assert(error_output.is_open());
-
-    std::cout << std::setprecision(5) << std::scientific;
-    std::cout << std::setw(15) << "NumDofs^(1/d)" << std::setw(12) << "||u-uh||" << std::endl;
-
-    for (int polynomialDegree=1; polynomialDegree<=10; polynomialDegree++)
-    {
-        FE_Solution* FE = new FE_Solution(*myMesh, polynomialDegree);
-
-        SparseMatrix* A = new SparseMatrix(*FE, numElements);
-        Vector* F = new Vector (FE->GetNumberOfDofs());
-
-        int n_q = 20;
-
-        int numElementDofs;
-
-        for (int k=1; k<=myMesh->GetNumElements(); k++)
-        {
-            Vector* quadratureWeights = new Vector (n_q);
-            Matrix* localQuadraturePoints = new Matrix (1,n_q);
-            Matrix* globalQuadraturePoints = new Matrix (1,n_q);
-
-            numElementDofs = FE->GetNumElementDofs(k);
-            Matrix* A_loc = new Matrix (numElementDofs, numElementDofs);
-            Vector* f_loc = new Vector (numElementDofs);
-
-            myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
-
-
-            for (int q=1; q<=n_q; q++)
+            for (int j=1; j<=Grid->GetNumberOfColumns(); j++)
             {
-                Vector* basisValues = new Vector(numElementDofs);
-                Matrix* basisGrad = new Matrix(myMesh->GetDimension(),numElementDofs);
-                Matrix* jacobian = new Matrix (myMesh->GetDimension(), myMesh->GetDimension());
-                Vector* pointToEval = new Vector(localQuadraturePoints->GetColumnAsVector(q));
+                (*Grid)(1,j) = (j-1)*((b-a)/numElements) + a;
+            }
 
-                myMesh->GetElement(k)->ComputeMappingJacobian(*pointToEval, *jacobian);
-                delete pointToEval;
+            Matrix* Connectivity = new Matrix (numElements, 2);
 
-                FE->ComputeBasis(k, (*localQuadraturePoints)(1,q), *basisValues);
-                FE->ComputeGradBasis(k, (*localQuadraturePoints)(1,q), *basisGrad);
+            for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+            {
+                for (int j=1; j<=Connectivity->GetNumberOfColumns(); j++)
+                {
+                    (*Connectivity)(i,j) = i + (j-1);
+                }
+            }
+
+            Mesh* myMesh = new Mesh(*Grid, numElements);
+
+            delete Grid;
+
+            for (int i=1; i<=Connectivity->GetNumberOfRows(); i++)
+            {
+                Vector* Con_temp = new Vector (Connectivity->GetRowAsVector(i));
+                myMesh->InitialiseElement(i, *Con_temp, 0);
+                delete Con_temp;
+            }
+
+            delete Connectivity;
+
+
+            FE_Solution* FE = new FE_Solution(*myMesh, polynomialDegree);
+
+            SparseMatrix* A = new SparseMatrix(*FE, numElements);
+            Vector* F = new Vector (FE->GetNumberOfDofs());
+
+            int n_q = 20;
+
+            int numElementDofs;
+
+            for (int k=1; k<=myMesh->GetNumElements(); k++)
+            {
+                Vector* quadratureWeights = new Vector (n_q);
+                Matrix* localQuadraturePoints = new Matrix (1,n_q);
+                Matrix* globalQuadraturePoints = new Matrix (1,n_q);
+
+                numElementDofs = FE->GetNumElementDofs(k);
+                Matrix* A_loc = new Matrix (numElementDofs, numElementDofs);
+                Vector* f_loc = new Vector (numElementDofs);
+
+                myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
+
+
+                for (int q=1; q<=n_q; q++)
+                {
+                    Vector* basisValues = new Vector(numElementDofs);
+                    Matrix* basisGrad = new Matrix(myMesh->GetDimension(),numElementDofs);
+                    Matrix* jacobian = new Matrix (myMesh->GetDimension(), myMesh->GetDimension());
+                    Vector* pointToEval = new Vector(localQuadraturePoints->GetColumnAsVector(q));
+
+                    myMesh->GetElement(k)->ComputeMappingJacobian(*pointToEval, *jacobian);
+                    delete pointToEval;
+
+                    FE->ComputeBasis(k, (*localQuadraturePoints)(1,q), *basisValues);
+                    FE->ComputeGradBasis(k, (*localQuadraturePoints)(1,q), *basisGrad);
+
+                    for (int i=1; i<=A_loc->GetNumberOfRows(); i++)
+                    {
+                        for (int j=1; j<=A_loc->GetNumberOfColumns(); j++)
+                        {
+                            (*A_loc)(i,j) += (*basisGrad)(1,i)*(*basisGrad)(1,j)*(*quadratureWeights)(q);
+                        }
+                    }
+                    for (int i=1; i<=f_loc->GetSize(); i++)
+                    {
+                        (*f_loc)(i) += (*basisValues)(i)*(*quadratureWeights)(q) * (-2.0*pow(Pi,2.0)*cos(2.0*Pi*(*globalQuadraturePoints)(1,q)));
+                    }
+
+                    delete basisValues;
+                    delete basisGrad;
+                    delete jacobian;
+                }
+
+                delete quadratureWeights;
+                delete localQuadraturePoints;
+                delete globalQuadraturePoints;
 
                 for (int i=1; i<=A_loc->GetNumberOfRows(); i++)
                 {
                     for (int j=1; j<=A_loc->GetNumberOfColumns(); j++)
                     {
-                        (*A_loc)(i,j) += (*basisGrad)(1,i)*(*basisGrad)(1,j)*(*quadratureWeights)(q);
+                        A->AddValue(A->Read((FE->GetElementDofs(k))(i), (FE->GetElementDofs(k))(j)) + (*A_loc)(i,j), (FE->GetElementDofs(k))(i), (FE->GetElementDofs(k))(j));
                     }
                 }
                 for (int i=1; i<=f_loc->GetSize(); i++)
                 {
-                    (*f_loc)(i) += (*basisValues)(i)*(*quadratureWeights)(q) * (-2.0*pow(Pi,2.0)*cos(2.0*Pi*(*globalQuadraturePoints)(1,q)));
+                    (*F)((FE->GetElementDofs(k))(i)) += (*f_loc)(i);
                 }
 
-                delete basisValues;
-                delete basisGrad;
-                delete jacobian;
+                delete A_loc;
+                delete f_loc;
             }
 
-            delete quadratureWeights;
-            delete localQuadraturePoints;
-            delete globalQuadraturePoints;
-
-            for (int i=1; i<=A_loc->GetNumberOfRows(); i++)
+            for (int i=1; i<=A->GetNumberOfRows(); i++)
             {
-                for (int j=1; j<=A_loc->GetNumberOfColumns(); j++)
+                for (int j=1; j<=A->GetNumberOfColumns(); j++)
                 {
-                    A->AddValue(A->Read((FE->GetElementDofs(k))(i), (FE->GetElementDofs(k))(j)) + (*A_loc)(i,j), (FE->GetElementDofs(k))(i), (FE->GetElementDofs(k))(j));
-                }
-            }
-            for (int i=1; i<=f_loc->GetSize(); i++)
-            {
-                (*F)((FE->GetElementDofs(k))(i)) += (*f_loc)(i);
-            }
-
-            delete A_loc;
-            delete f_loc;
-        }
-
-        for (int i=1; i<=A->GetNumberOfRows(); i++)
-        {
-            for (int j=1; j<=A->GetNumberOfColumns(); j++)
-            {
-                if (i==1 || i==myMesh->GetNumNodes() || j==1 || j==myMesh->GetNumNodes())
-                {
-                    if (i==j)
+                    if (i==1 || i==myMesh->GetNumNodes() || j==1 || j==myMesh->GetNumNodes())
                     {
-                        A->AddValue(1, i, j);
-                    }
-                    else
-                    {
-                        A->AddValue(0, i, j);
+                        if (i==j)
+                        {
+                            A->AddValue(1, i, j);
+                        }
+                        else
+                        {
+                            A->AddValue(0, i, j);
+                        }
                     }
                 }
             }
-        }
-        for (int i=1; i<=F->GetSize(); i++)
-        {
-            if (i==1 || i==myMesh->GetNumNodes())
+            for (int i=1; i<=F->GetSize(); i++)
             {
-                (*F)(i) = 0;
-            }
-        }
-
-        A->CGSolveSystem(*F, FE->GetSolutionVector(), 1e-9, 1000);
-
-        delete A;
-        delete F;
-
-        double Error_L2 = 0;
-
-        for (int k=1; k<=myMesh->GetNumElements(); k++)
-        {
-            Vector* quadratureWeights = new Vector (n_q);
-            Matrix* localQuadraturePoints = new Matrix (1,n_q);
-            Matrix* globalQuadraturePoints = new Matrix (1,n_q);
-
-            myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
-            for (int q=1; q<=n_q; q++)
-            {
-                Error_L2 += (pow((pow(sin(Pi*(*globalQuadraturePoints)(1,q)),2.0)) - (FE->ComputeUh(k, (*localQuadraturePoints)(1,q))),2.0) * (*quadratureWeights)(q));
+                if (i==1 || i==myMesh->GetNumNodes())
+                {
+                    (*F)(i) = 0;
+                }
             }
 
-            delete quadratureWeights;
-            delete localQuadraturePoints;
-            delete globalQuadraturePoints;
+            A->CGSolveSystem(*F, FE->GetSolutionVector(), 1e-9, 1000);
+
+            delete A;
+            delete F;
+
+            double Error_L2 = 0;
+
+            for (int k=1; k<=myMesh->GetNumElements(); k++)
+            {
+                Vector* quadratureWeights = new Vector (n_q);
+                Matrix* localQuadraturePoints = new Matrix (1,n_q);
+                Matrix* globalQuadraturePoints = new Matrix (1,n_q);
+
+                myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
+                for (int q=1; q<=n_q; q++)
+                {
+                    Error_L2 += (pow((pow(sin(Pi*(*globalQuadraturePoints)(1,q)),2.0)) - (FE->ComputeUh(k, (*localQuadraturePoints)(1,q))),2.0) * (*quadratureWeights)(q));
+                }
+
+                delete quadratureWeights;
+                delete localQuadraturePoints;
+                delete globalQuadraturePoints;
+            }
+
+            Error_L2 = sqrt(Error_L2);
+
+            std::cout << std::setw(14) << pow(FE->GetNumberOfDofs(), 1.0/(myMesh->GetDimension())) << std::setw(15) << Error_L2 << std::endl;
+            error_output << pow(FE->GetNumberOfDofs(), 1.0/(myMesh->GetDimension())) << " " << Error_L2 << std::endl;
+
+            delete FE;
+            delete myMesh;
         }
-
-        Error_L2 = sqrt(Error_L2);
-
-        std::cout << std::setw(14) << pow(FE->GetNumberOfDofs(), 1.0/(myMesh->GetDimension())) << std::setw(15) << Error_L2 << std::endl;
-        error_output << pow(FE->GetNumberOfDofs(), 1.0/(myMesh->GetDimension())) << " " << Error_L2 << std::endl;
-
-        delete FE;
+        std::cout << std::endl;
+        error_output.close();
     }
-
-    error_output.close();
-
-    delete myMesh;
 }
 
 void Example2D()
