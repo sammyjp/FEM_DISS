@@ -250,7 +250,7 @@ void ErrorAnalysis1D()
         std::cout << std::setprecision(5) << std::scientific;
         std::cout << std::setw(15) << "NumDofs^(1/d)" << std::setw(12) << "||u-uh||" << std::endl;
 
-        for (int numElements=1; numElements<=30; numElements++)
+        for (int numElements=4; numElements<=64; numElements=numElements*2)
         {
             Matrix* Grid = new Matrix (1,numElements+1);
 
@@ -565,9 +565,65 @@ void Example2D()
             (*F)(i) = 0;
         }
     }
-    std::cout << "A = \n" << *A;
-    std::cout << "F = \n" << *F;
 
     A->CGSolveSystem(*F, FE->GetSolutionVector(), 1e-9, 1000);
-    std::cout << "U = \n" << FE->GetSolutionVector();
+delete A;
+    delete F;
+
+    std::cout << std::setprecision(5) << std::scientific;
+    std::cout << std::setw(8) << "U" << std::endl << std::setw(14) << FE->GetSolutionVector();
+
+    // Creates an output file
+    std::ofstream output_file;
+    output_file.setf(std::ios::scientific,std::ios::floatfield);
+    output_file.precision(6);
+
+    // Open file (and perform a check)
+    output_file.open("2DExample.dat");
+    assert(output_file.is_open());
+    for (int i=1; i<=myMesh->GetDimension(); i++)
+    {
+        std::cout << std::setw(8) << "x" << i << std::setw(13);
+    }
+    std::cout << "u" << std::endl;
+    for (int j=1; j<=myMesh->GetNumNodes(); j++)
+    {
+        for (int i=1; i<=myMesh->GetDimension(); i++)
+        {
+            std::cout << std::setw(14) << (myMesh->GetAllGridPoints())(i,j) << std::setw(14);
+            output_file << (myMesh->GetAllGridPoints())(i,j) << " ";
+        }
+        std::cout << (FE->GetSolutionVector())(j) << std::endl;
+        output_file << (FE->GetSolutionVector())(j) << std::endl;
+    }
+
+    output_file.close();
+
+    double Error_L2 = 0;
+
+    for (int k=1; k<=myMesh->GetNumElements(); k++)
+    {
+        Vector* quadratureWeights = new Vector (n_q);
+        Matrix* localQuadraturePoints = new Matrix (1,n_q);
+        Matrix* globalQuadraturePoints = new Matrix (1,n_q);
+
+        myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
+        for (int q=1; q<=n_q; q++)
+        {
+            Error_L2 += (pow((pow(sin(Pi*(*globalQuadraturePoints)(1,q)),2.0)) - (FE->ComputeUh(k, (*localQuadraturePoints)(1,q))),2.0) * (*quadratureWeights)(q));
+        }
+
+        delete quadratureWeights;
+        delete localQuadraturePoints;
+        delete globalQuadraturePoints;
+    }
+
+    Error_L2 = sqrt(Error_L2);
+
+    std::cout << std::endl;
+    std::cout << std::setw(13) << "||u-uh|| = " << Error_L2 << std::endl;
+    std::cout << std::endl;
+
+    delete FE;
+    delete myMesh;
 }
