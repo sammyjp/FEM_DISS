@@ -18,8 +18,7 @@ const double Pi = 4*atan(1);
 
 int main(int argc, char* argv[])
 {
-    Example1D();
-    ErrorAnalysis1D();
+    Example2D();
     return 0;
 }
 
@@ -419,6 +418,10 @@ void ErrorAnalysis1D()
 
 void Example2D()
 {
+    /*
+        f(x) = 4 -2*((1+2*Pi^2(y-y^2))cos(2*Pi*x) + (1+2*Pi^2(x-x^2))cos(2*Pi*y))
+    */
+
     int numElements = 16;
 
     Matrix* Grid = new Matrix (2,25);
@@ -513,7 +516,7 @@ void Example2D()
             }
             for (int i=1; i<=f_loc->GetSize(); i++)
             {
-                (*f_loc)(i) += (*basisValues)(i)*(*quadratureWeights)(q);
+                (*f_loc)(i) += (*basisValues)(i)*(*quadratureWeights)(q) * (4 - 2*((1+2*pow(Pi,2.0)*((*globalQuadraturePoints)(2,q) - pow((*globalQuadraturePoints)(2,q),2.0)))*cos(2*Pi*(*globalQuadraturePoints)(1,q))) + (1+2*pow(Pi,2.0)*((*globalQuadraturePoints)(1,q) - pow((*globalQuadraturePoints)(1,q),2.0)))*cos(2*Pi*(*globalQuadraturePoints)(2,q)));
             }
 
             delete basisValues;
@@ -567,7 +570,7 @@ void Example2D()
     }
 
     A->CGSolveSystem(*F, FE->GetSolutionVector(), 1e-9, 1000);
-delete A;
+    delete A;
     delete F;
 
     std::cout << std::setprecision(5) << std::scientific;
@@ -610,7 +613,9 @@ delete A;
         myMesh->GetElement(k)->GetQuadrature(n_q, *quadratureWeights, *localQuadraturePoints, *globalQuadraturePoints);
         for (int q=1; q<=n_q; q++)
         {
-            Error_L2 += (pow((pow(sin(Pi*(*globalQuadraturePoints)(1,q)),2.0)) - (FE->ComputeUh(k, (*localQuadraturePoints)(1,q))),2.0) * (*quadratureWeights)(q));
+            Vector* localQuadPoints = new Vector (localQuadraturePoints->GetColumnAsVector(q));
+            Error_L2 += (pow((2*(pow(sin(Pi*(*globalQuadraturePoints)(1,q)),2.0)*((*globalQuadraturePoints)(2,q)-pow((*globalQuadraturePoints)(2,q),2.0)) + pow(sin(Pi*(*globalQuadraturePoints)(2,q)),2.0)*((*globalQuadraturePoints)(1,q)-pow((*globalQuadraturePoints)(1,q),2.0)))) - (FE->ComputeUh(k, (*localQuadPoints))),2.0) * (*quadratureWeights)(q));
+            delete localQuadPoints;
         }
 
         delete quadratureWeights;

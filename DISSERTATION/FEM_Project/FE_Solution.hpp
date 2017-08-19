@@ -43,6 +43,7 @@ public:
     void ComputeGradBasis(int elementNumber, Vector& localGridPoint, Matrix& gradBasisValues);
 
     double ComputeUh(int elementNumber, double localGridPoint);
+    double ComputeUh(int elementNumber, Vector& localGridPoint);
 };
 
 #endif

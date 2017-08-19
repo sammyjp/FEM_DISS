@@ -149,3 +149,21 @@ double FE_Solution::ComputeUh(int elementNumber, double localGridPoint)
     return Uh;
 }
 
+double FE_Solution::ComputeUh(int elementNumber, Vector& localGridPoint)
+{
+    double Uh = 0;
+
+    Vector* basisValues = new Vector (GetNumElementDofs(elementNumber));
+    ComputeBasis(elementNumber, localGridPoint, *basisValues);
+    Vector* elementDofs = new Vector (GetElementDofs(elementNumber));
+
+    for (int i=1; i<=GetNumElementDofs(elementNumber); i++)
+    {
+        Uh += ((*mSolutionVector)((*elementDofs)(i)))*((*basisValues)(i));
+    }
+
+    delete basisValues;
+    delete elementDofs;
+
+    return Uh;
+}
