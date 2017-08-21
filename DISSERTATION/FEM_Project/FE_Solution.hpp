@@ -33,7 +33,6 @@ public:
     int GetNumberOfDofs();
     int GetNumElementDofs(int elementNumber);
 
-    void SetSolutionVector();
     Vector& GetSolutionVector();
 
     void ComputeBasis(int elementNumber, double localGridPoint, Vector& basisValues);
