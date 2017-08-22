@@ -32,7 +32,6 @@ public:
 
     virtual void MapLocalToGlobal(Matrix& localCoords, Matrix& globalCoords) = 0;
     virtual void MapGlobalToLocal(Matrix& globalCoords, Matrix& localCoords) = 0;
-    virtual void ComputeMappingJacobian(double pointToEval, Matrix& Jacobian);
     virtual void ComputeMappingJacobian(Vector& pointToEval, Matrix& Jacobian) = 0;
 
     virtual void GetQuadrature(const int n_q, Vector& quadratureWeights, Matrix& localQuadraturePoints, Matrix& globalQuadraturePoints);

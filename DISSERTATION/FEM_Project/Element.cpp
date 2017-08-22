@@ -49,8 +49,3 @@ double Element::PerformElementQuadrature(const int n_q, Vector& quadratureWeight
 
     return I;
 }
-
-void Element::ComputeMappingJacobian(double pointToEval, Matrix& Jacobian)
-{
-    assert(GetElementType() == 0);
-}
