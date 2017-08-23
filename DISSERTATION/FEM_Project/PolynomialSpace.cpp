@@ -11,9 +11,14 @@ PolynomialSpace::PolynomialSpace(int polynomialDegree, int elementType)
     {
         mNumElementDofs = polynomialDegree + 1;
     }
+    else if (mElementType == 1)
+    {
+        /* LINEAR BASES ONLY */
+        mNumElementDofs = 3;
+    }
     else if (mElementType == 2)
     {
-        /* TEMPORARY */
+        /* LINEAR BASES ONLY */
         mNumElementDofs = 4;
     }
 }
@@ -202,9 +207,19 @@ void PolynomialSpace::ComputeBasis(Vector& localGridPoint, Vector& basisValues)
                 basisValues(i) = EvaluateNthLobattoPolynomial(i-1, localGridPoint(1));
             }
         } break;
+    case 1:
+        {
+            /* LINEAR BASES ONLY */
+            assert (mPolynomialDegree == 1);
+
+            basisValues(1) = -(localGridPoint(1)+localGridPoint(2))/2.0;
+            basisValues(2) = (1+localGridPoint(1))/2.0;
+            basisValues(3) = (1+localGridPoint(2))/2.0;
+        } break;
     case 2:
         {
-            /* temporary until functions programmed in */ assert (mPolynomialDegree == 1);
+            /* LINEAR BASES ONLY */
+            assert (mPolynomialDegree == 1);
 
             basisValues(1) = EvaluateNthLobattoPolynomial(0, localGridPoint(1))*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
             basisValues(2) = EvaluateNthLobattoPolynomial(1, localGridPoint(1))*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
@@ -248,9 +263,23 @@ void PolynomialSpace::ComputeGradBasis(Vector& localGridPoint, Matrix& gradBasis
                 gradBasisValues(1,i) =  sqrt((2.0*(i-1) - 1.0)/2.0)*EvaluateNthLegendrePolynomial(i-2, localGridPoint(1));
             }
         } break;
+    case 1:
+        {
+            /* LINEAR BASES ONLY */
+            assert(mPolynomialDegree == 1);
+
+            gradBasisValues(1,1) = -0.5;
+            gradBasisValues(2,1) = -0.5;
+            gradBasisValues(1,2) = 0.5;
+            gradBasisValues(2,2) = 0;
+            gradBasisValues(1,3) = 0;
+            gradBasisValues(2,3) = 0.5;
+        } break;
     case 2:
         {
-            /* temporary until functions programmed in */ assert (mPolynomialDegree == 1);
+            /* LINEAR BASES ONLY */
+            assert (mPolynomialDegree == 1);
+
             gradBasisValues(1,1) = -0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
             gradBasisValues(2,1) = -0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(1));
             gradBasisValues(1,2) = 0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(2));
@@ -259,7 +288,7 @@ void PolynomialSpace::ComputeGradBasis(Vector& localGridPoint, Matrix& gradBasis
             gradBasisValues(2,3) = 0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(1));
             gradBasisValues(1,4) = -0.5*EvaluateNthLobattoPolynomial(1, localGridPoint(2));
             gradBasisValues(2,4) = 0.5*EvaluateNthLobattoPolynomial(0, localGridPoint(1));
-        }
+        } break;
     }
 }
 

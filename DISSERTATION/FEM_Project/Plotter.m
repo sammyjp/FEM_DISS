@@ -1,3 +1,5 @@
+clear;
+
 Error1 = importdata('1DError_p1.dat');
 Error2 = importdata('1DError_p2.dat');
 Error3 = importdata('1DError_p3.dat');

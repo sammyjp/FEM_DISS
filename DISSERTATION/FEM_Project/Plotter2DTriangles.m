@@ -1,6 +1,6 @@
 clear;
 
-Data = importdata('2DExample.dat');
+Data = importdata('2DTrianglesExample.dat');
 DataSize = size(Data);
 numElements = (sqrt(DataSize(1))-1)^2;
 

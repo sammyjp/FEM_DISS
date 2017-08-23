@@ -47,7 +47,7 @@ void FE_Solution::InitialiseElementDofs()
         }
         else if (mMeshReference->GetElement(i+1)->GetElementType() == 1)
         {
-
+            (*dofStart)[i+1] = (*dofStart)[i] + ((mPolynomialDegree-1)*3);
         }
         else if (mMeshReference->GetElement(i+1)->GetElementType() == 2)
         {
@@ -122,12 +122,33 @@ void FE_Solution::ComputeGradBasis(int elementNumber, Vector& localGridPoint, Ma
     GetElementPolynomialSpace(elementNumber)->ComputeGradBasis(localGridPoint, gradBasisValues);
 
     Matrix* jacobian = new Matrix (mMeshReference->GetDimension(), mMeshReference->GetDimension());
-
     mMeshReference->GetElement(elementNumber)->ComputeMappingJacobian(localGridPoint, *jacobian);
 
-    gradBasisValues = gradBasisValues*(1.0/(jacobian->CalculateDeterminant()));
+    Matrix* jacobianInverseTranspose = new Matrix (*jacobian);
 
+    (*jacobianInverseTranspose)(1,1) = (*jacobian)(2,2);
+    (*jacobianInverseTranspose)(1,2) = -(*jacobian)(2,1);
+    (*jacobianInverseTranspose)(2,1) = -(*jacobian)(1,2);
+    (*jacobianInverseTranspose)(2,2) = (*jacobian)(1,1);
+
+    (*jacobianInverseTranspose) = (*jacobianInverseTranspose)*(1.0/jacobian->CalculateDeterminant());
     delete jacobian;
+
+    for (int j=1; j<=gradBasisValues.GetNumberOfColumns(); j++)
+    {
+        Vector* gradTemp = new Vector(gradBasisValues.GetColumnAsVector(j));
+
+        (*gradTemp) = (*jacobianInverseTranspose)*(*gradTemp);
+
+        for (int i=1; i<=gradBasisValues.GetNumberOfRows(); i++)
+        {
+            gradBasisValues(i,j) = (*gradTemp)(i);
+        }
+
+        delete gradTemp;
+    }
+
+    delete jacobianInverseTranspose;
 }
 
 double FE_Solution::ComputeUh(int elementNumber, double localGridPoint)

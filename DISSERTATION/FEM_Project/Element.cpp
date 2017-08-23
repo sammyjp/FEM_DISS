@@ -34,7 +34,6 @@ void Element::GetQuadrature(const int n_q, Vector& quadratureWeights, Matrix& lo
 
         delete pointToEvalJacobian;
     }
-
     delete jacobian;
 }
 
@@ -48,4 +47,8 @@ double Element::PerformElementQuadrature(const int n_q, Vector& quadratureWeight
     }
 
     return I;
+}
+
+void Element::ComputeMappingJacobian(double pointToEval, Matrix& Jacobian)
+{
 }
