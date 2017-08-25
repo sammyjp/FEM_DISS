@@ -236,26 +236,3 @@ void QuadratureLibrary::GetQuadrature(const int elementType, const int n_q, Vect
     }
 }
 
-double QuadratureLibrary::GaussQuadrature(int elementType, Vector& gaussPoints, Vector& functionPoints, double mappingJacobianDeterminant)
-{
-    Vector* GQWeights = new Vector(gaussPoints.GetSize());
-    ComputeGQWeights((*GQWeights), gaussPoints);
-
-    double I = 0;
-
-    switch(elementType)
-    {
-        case 0:
-        {
-            assert(functionPoints.GetSize() == gaussPoints.GetSize());
-
-            for (int i=0; i<functionPoints.GetSize(); i++)
-            {
-                I += (*GQWeights)[i]*mappingJacobianDeterminant*functionPoints[i];
-            }
-        } break;
-    }
-
-    delete GQWeights;
-    return I;
-}

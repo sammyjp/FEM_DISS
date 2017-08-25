@@ -47,11 +47,13 @@ void FE_Solution::InitialiseElementDofs()
         }
         else if (mMeshReference->GetElement(i+1)->GetElementType() == 1)
         {
-            (*dofStart)[i+1] = (*dofStart)[i] + ((mPolynomialDegree-1)*3);
+            /* LINEAR BASES ONLY */
+            (*dofStart)[i+1] = (*dofStart)[i];
         }
         else if (mMeshReference->GetElement(i+1)->GetElementType() == 2)
         {
-            (*dofStart)[i+1] = (*dofStart)[i] + ((mPolynomialDegree-1)*4);
+            /* LINEAR BASES ONLY */
+            (*dofStart)[i+1] = (*dofStart)[i];
         }
     }
 }
@@ -106,19 +108,21 @@ void FE_Solution::ComputeBasis(int elementNumber, Vector& localGridPoint, Vector
 
 void FE_Solution::ComputeGradBasis(int elementNumber, double localGridPoint, Matrix& gradBasisValues)
 {
+    /* For dimension 1 */
     GetElementPolynomialSpace(elementNumber)->ComputeGradBasis(localGridPoint, gradBasisValues);
 
     Matrix* jacobian = new Matrix (mMeshReference->GetDimension(), mMeshReference->GetDimension());
 
     mMeshReference->GetElement(elementNumber)->ComputeMappingJacobian(localGridPoint, *jacobian);
 
-    gradBasisValues = gradBasisValues*(1.0/(jacobian->CalculateDeterminant()));
+    gradBasisValues = gradBasisValues*(1.0/(*jacobian)(1,1));
 
     delete jacobian;
 }
 
 void FE_Solution::ComputeGradBasis(int elementNumber, Vector& localGridPoint, Matrix& gradBasisValues)
 {
+    /* For dimension 2 */
     GetElementPolynomialSpace(elementNumber)->ComputeGradBasis(localGridPoint, gradBasisValues);
 
     Matrix* jacobian = new Matrix (mMeshReference->GetDimension(), mMeshReference->GetDimension());
