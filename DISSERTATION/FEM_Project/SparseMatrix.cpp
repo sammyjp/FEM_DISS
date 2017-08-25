@@ -253,3 +253,8 @@ void SparseMatrix::CGSolveSystem(const Vector& rightHandVector, Vector& solution
     delete p;
     delete w;
 }
+
+int SparseMatrix::GetNumberNonZeroes() const
+{
+    return mNumNonZeros;
+}

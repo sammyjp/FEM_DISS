@@ -19,7 +19,7 @@ const double Pi = 4*atan(1);
 
 int main(int argc, char* argv[])
 {
-    Example2D();
+    Example2DTriangles();
     return 0;
 }
 
@@ -815,6 +815,7 @@ void Example2DTriangles()
     }
 
     A->CGSolveSystem(*F, FE->GetSolutionVector(), 1e-9, 1000);
+
     delete A;
     delete F;
 

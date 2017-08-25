@@ -35,6 +35,7 @@ public:
     Vector GetColumnIndexArray() const;
     int GetNumberOfRows() const;
     int GetNumberOfColumns() const;
+    int GetNumberNonZeroes() const;
 
     void AddValue(double value, int i, int j);
 
