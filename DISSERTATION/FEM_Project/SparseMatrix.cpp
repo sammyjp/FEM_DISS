@@ -9,12 +9,7 @@ SparseMatrix::SparseMatrix(FE_Solution& FE, int numElements)
     mNumRows = FE.GetNumberOfDofs();
     mNumCols = FE.GetNumberOfDofs();
 
-    mRow_ptr = new Vector (mNumRows+1);
-    (*mRow_ptr) = 1;
-
     Vector* NNZ = new Vector (FE.GetNumberOfDofs());
-
-    mNumNonZeros = 0;
 
     for (int k=1; k<=numElements; k++)
     {
@@ -27,10 +22,15 @@ SparseMatrix::SparseMatrix(FE_Solution& FE, int numElements)
         }
     }
 
+    mNumNonZeros = 0;
+
     for (int i=0; i<NNZ->GetSize(); i++)
     {
         mNumNonZeros += (*NNZ)[i];
     }
+
+    mRow_ptr = new Vector (mNumRows+1);
+    (*mRow_ptr) = 1;
 
     for (int i=1; i<mRow_ptr->GetSize(); i++)
     {

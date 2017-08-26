@@ -19,7 +19,7 @@ const double Pi = 4*atan(1);
 
 int main(int argc, char* argv[])
 {
-    Example2DTriangles();
+    ErrorAnalysis1D();
     return 0;
 }
 
