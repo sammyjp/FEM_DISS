@@ -19,7 +19,7 @@ const double Pi = 4*atan(1);
 
 int main(int argc, char* argv[])
 {
-    ErrorAnalysis1D();
+    Example1D();
     return 0;
 }
 
@@ -31,8 +31,8 @@ void Example1D()
 
     double a = 0;
     double b = 1;
-    int numElements = 16;
-    int polynomialDegree = 1;
+    int numElements = 12;
+    int polynomialDegree = 2;
 
     Matrix* Grid = new Matrix (1,numElements+1);
 
