@@ -69,7 +69,7 @@ void Example1D()
     SparseMatrix* A = new SparseMatrix(*FE, numElements);
     Vector* F = new Vector (FE->GetNumberOfDofs());
 
-    int n_q = 20;
+    int n_q = 5;
 
     int numElementDofs;
 
@@ -90,11 +90,6 @@ void Example1D()
         {
             Vector* basisValues = new Vector(numElementDofs);
             Matrix* basisGrad = new Matrix(myMesh->GetDimension(),numElementDofs);
-            Matrix* jacobian = new Matrix (myMesh->GetDimension(), myMesh->GetDimension());
-            Vector* pointToEval = new Vector(localQuadraturePoints->GetColumnAsVector(q));
-
-            myMesh->GetElement(k)->ComputeMappingJacobian(*pointToEval, *jacobian);
-            delete pointToEval;
 
             FE->ComputeBasis(k, (*localQuadraturePoints)(1,q), *basisValues);
             FE->ComputeGradBasis(k, (*localQuadraturePoints)(1,q), *basisGrad);
@@ -113,7 +108,6 @@ void Example1D()
 
             delete basisValues;
             delete basisGrad;
-            delete jacobian;
         }
 
         delete quadratureWeights;

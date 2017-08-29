@@ -15,7 +15,7 @@ plot(Data(:,1), Data(:,2));
 legend('FEM','Actual');
 xlabel('x');
 ylabel('u(x)');
-title('Plot of $u(x) = \sin(\pi x)^2$ for $h=0.0625$, $p=1$','interpreter','latex');
+title('Plot of finite element solution for $h=\frac{1}{12}$.','interpreter','latex');
 
 figure;
 loglog(Error1(:,1), Error1(:,2));
@@ -51,4 +51,4 @@ text(256+12, xline/5,'5');
 xlabel('$\sqrt[d]{Dofs}$','interpreter','latex');
 ylabel('Error');
 legend('p=1','p=2','p=3','p=4');
-title('');
+title('Error plot for the finite element method in 1 dimension.','interpreter','latex');
