@@ -104,6 +104,7 @@ double PolynomialSpace::EvaluateNthLobattoPolynomial(int n, double pointToEvalua
         return I;
     }
 }
+
 void PolynomialSpace::EvaluateNthLegendrePolynomial(int n, Vector& pointsToEvaluate, Vector& legendrePoints)
 {
     assert(pointsToEvaluate.GetSize() == legendrePoints.GetSize());
@@ -175,7 +176,6 @@ void PolynomialSpace::EvaluateNthLobattoPolynomial(int n, Vector& pointsToEvalua
         delete legendrePoints_prev;
         delete legendrePoints;
     }
-
 }
 
 int PolynomialSpace::GetNumElementDofs()
